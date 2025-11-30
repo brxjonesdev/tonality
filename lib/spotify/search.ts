@@ -25,8 +25,7 @@ export async function spotifySearch(query: string, type: SpotifySearchType = "al
     });
 
     if (!res.ok) {
-        const error = await res.json();
-        throw new Error(JSON.stringify(error));
+        return {error: "Spotify API request failed"};
     }
 
     return res.json();
