@@ -1,7 +1,8 @@
-import { SpotifyError, SpotifyResponse, SpotifySearchType } from "./types";
+import { SpotifyError, SpotifyResponse, SpotifySearchType, SearchResponse} from "./types";
+import {Result, ok, err} from "@/lib/utils"
 
 
-export async function spotifySearch(query: string, type: SpotifySearchType = "album") {
+export async function spotifySearch(query: string, type: SpotifySearchType = "album"): Promise<Result<SearchResponse, SpotifyError>> {
     const base = process.env.NEXT_PUBLIC_BASE_URL!;
     const tokenRes = await fetch(`${base}/api/spotify/token`, {
         cache: "no-store",
@@ -25,8 +26,15 @@ export async function spotifySearch(query: string, type: SpotifySearchType = "al
     });
 
     if (!res.ok) {
-        return {error: "Spotify API request failed"};
-    }
+        const errorData: SpotifyError = await res.json();
+        return err(errorData);
+    }  
+    const data: SearchResponse = await res.json();
+    const typeMap: Record<SpotifySearchType, keyof SearchResponse> = {
+        album: "albums",
+        artist: "artists",
+        track: "tracks",
+    };
 
-    return res.json();
+    return ok(data[typeMap[type]]);
 }
