@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Figtree } from "next/font/google";
 import "./globals.css";
+import QueryProvider from "@/lib/shared/QueryProvider";
 
 const figtree = Figtree({
   subsets: ["latin"],
@@ -24,7 +25,7 @@ export default function RootLayout({
       <body
         className={`${figtree.variable}  antialiased font-sans`}
       >
-        {children}
+        <QueryProvider>{children}</QueryProvider>
       </body>
     </html>
   );

@@ -16,6 +16,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/lib/components/shared/empty"
+import { formatSpotifyResults, spotifySearch } from '@/lib/spotify/utils'
 export const sampleResults: ResultItemProps[] = [
   {
     type: "track",
@@ -103,35 +104,40 @@ export default function SearchBar() {
   const id = useId()
   const [searchMode, setSearchMode] = useState<'album' | 'artist' | 'track'>('track')
   const [searchQuery, setSearchQuery] = useState('')
-  const [results, setResults] = useState<ResultItemProps[]>([])
   const debouncedSearchQuery = useDebounce(searchQuery, 300)
   
 
-  useEffect(()=> {
-    if (!debouncedSearchQuery) return;
-      const filteredResult = sampleResults.filter(item => 
-        item.type === searchMode && 
-        item.title.toLowerCase().includes(debouncedSearchQuery.toLowerCase())
-      );
-      setResults(filteredResult);
+  // useEffect(()=> {
+  //   if (!debouncedSearchQuery) return;
+  //     const filteredResult = sampleResults.filter(item => 
+  //       item.type === searchMode && 
+  //       item.title.toLowerCase().includes(debouncedSearchQuery.toLowerCase())
+  //     );
+  //     setResults(filteredResult);
     
 
-  }, [debouncedSearchQuery, searchMode])
+  // }, [debouncedSearchQuery, searchMode])
 
 
-//   const {
-//   data: results = [],
-//   isLoading,
-//   isError
-// } = useQuery({
-//   queryKey: ['search', searchMode, debouncedSearchQuery],
-//   queryFn: async () => {
-//     if (!debouncedSearchQuery) return [];
-//     const response = spotifySearch(debouncedSearchQuery, searchMode);
-//     console.log("Fetched results:", response);
-//   },
-//   enabled: debouncedSearchQuery.length > 0, // do NOT run when input empty
-// })
+  const {
+  data: results = [],
+  isLoading,
+  isError
+} = useQuery({
+  queryKey: ['search', searchQuery, searchMode],
+  queryFn: async () => {
+    if (!debouncedSearchQuery) return [];
+    const response = await spotifySearch(debouncedSearchQuery, searchMode);
+    if (!response.ok){
+      throw new Error("Spotify Search Error");
+    }
+    const results = formatSpotifyResults(response.data, searchMode);
+
+    console.log("Fetched results:", results);
+    return results;
+  },
+  enabled: debouncedSearchQuery.length > 0, // do NOT run when input empty
+})
 
 
 
@@ -165,6 +171,11 @@ export default function SearchBar() {
         suppressHydrationWarning />
       </div>
       <div>
+        {isLoading && (
+          <div className="animate-in fade-in-50 duration-300">
+            <p>Loading results...</p>
+          </div>
+        )}
         {debouncedSearchQuery && results.length === 0 && (
           <div className="animate-in fade-in-50 duration-300">
            <Empty className="from-cyan-100 to-blue-300 h-full bg-gradient-to-b from-20%">
@@ -184,6 +195,11 @@ export default function SearchBar() {
             {results.map(item => (
               <ResultItem key={item.id} {...item} />
             ))}
+          </div>
+        )}
+        {isError && (
+          <div className="animate-in fade-in-50 duration-300">
+            <p>Error fetching results. Please try again later.</p>
           </div>
         )}
       </div>
