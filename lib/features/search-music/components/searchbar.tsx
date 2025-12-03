@@ -119,90 +119,122 @@ export default function SearchBar() {
   // }, [debouncedSearchQuery, searchMode])
 
 
-  const {
+ const {
   data: results = [],
   isLoading,
   isError
 } = useQuery({
-  queryKey: ['search', searchQuery, searchMode],
+  queryKey: ['search', debouncedSearchQuery, searchMode],
   queryFn: async () => {
     if (!debouncedSearchQuery) return [];
     const response = await spotifySearch(debouncedSearchQuery, searchMode);
-    if (!response.ok){
+
+    if (!response.ok) {
       throw new Error("Spotify Search Error");
     }
-    const results = formatSpotifyResults(response.data, searchMode);
 
-    console.log("Fetched results:", results);
-    return results;
+    return formatSpotifyResults(response.data, searchMode);
   },
-  enabled: debouncedSearchQuery.length > 0, // do NOT run when input empty
-})
+  enabled: debouncedSearchQuery.length > 0,
+});
+
 
 
 
   return (
     <div className='w-full max-w-xs space-y-2'>
       <Label htmlFor={id}>Search</Label>
-      <div className='flex rounded-md shadow-xs'>
-        <Select defaultValue='track' onValueChange={(value) => setSearchMode(value as 'album' | 'artist' | 'track')}>
-          <SelectTrigger id={id} className='rounded-r-none shadow-none focus-visible:z-1'>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value='track' className='pr-2 [&_svg]:hidden'>
-              Track
-            </SelectItem>
-            <SelectItem value='album' className='pr-2 [&_svg]:hidden'>
-              Album
-            </SelectItem>
-            <SelectItem value='artist' className='pr-2 [&_svg]:hidden'>
-              Artist
-            </SelectItem>
-          </SelectContent>
-        </Select>
-        <Input 
-        id={id} 
-        type='text' 
-        placeholder={songTitleRandomizer()} 
-        className='-ms-px rounded-l-none shadow-none'
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-        suppressHydrationWarning />
-      </div>
-      <div>
-        {isLoading && (
-          <div className="animate-in fade-in-50 duration-300">
-            <p>Loading results...</p>
-          </div>
-        )}
-        {debouncedSearchQuery && results.length === 0 && (
-          <div className="animate-in fade-in-50 duration-300">
-           <Empty className="from-cyan-100 to-blue-300 h-full bg-gradient-to-b from-20%">
-     <EmptyHeader>
-  <EmptyTitle>Uh… Hello?</EmptyTitle>
-  <EmptyDescription>
-    We searched everywhere...<br/> Nothing matched &ldquo;{debouncedSearchQuery}&quot;.  
-    Not even in the weird basement of Spotify.
-  </EmptyDescription>
-</EmptyHeader>
-    </Empty>
-          </div>
-        )}
+      <div className="flex rounded-md shadow-xs ">
+  <Select
+    defaultValue="track"
+    onValueChange={(value) =>
+      setSearchMode(value as "album" | "artist" | "track")
+    }
+  >
+    <SelectTrigger id={id} className="rounded-r-none shadow-none focus-visible:z-1">
+      <SelectValue />
+    </SelectTrigger>
 
-        {debouncedSearchQuery && results.length > 0 && (
-          <div className="animate-in fade-in-50 duration-300">
-            {results.map(item => (
-              <ResultItem key={item.id} {...item} />
-            ))}
-          </div>
-        )}
-        {isError && (
-          <div className="animate-in fade-in-50 duration-300">
-            <p>Error fetching results. Please try again later.</p>
-          </div>
-        )}
+    <SelectContent>
+      <SelectItem value="track" className="pr-2 [&_svg]:hidden">
+        Track
+      </SelectItem>
+      <SelectItem value="album" className="pr-2 [&_svg]:hidden">
+        Album
+      </SelectItem>
+      <SelectItem value="artist" className="pr-2 [&_svg]:hidden">
+        Artist
+      </SelectItem>
+    </SelectContent>
+  </Select>
+
+  <div className="relative flex-1">
+    <Input
+      id={id}
+      type="text"
+      placeholder={songTitleRandomizer()}
+      className="rounded-l-none shadow-none pr-10" // space for button
+      value={searchQuery}
+      onChange={(e) => setSearchQuery(e.target.value)}
+      suppressHydrationWarning
+    />
+
+    {searchQuery.length > 0 && (
+      <Button
+        variant="ghost"
+        size="icon"
+        className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 p-0"
+        onClick={() => setSearchQuery("")}
+      >
+        ✕
+      </Button>
+    )}
+  </div>
+</div>
+
+      <div>
+  {/* 1. Loading */}
+  {isLoading && debouncedSearchQuery.length > 0 && (
+    <div className="animate-in fade-in-50 duration-300">
+      <p>Loading results...</p>
+    </div>
+  )}
+
+  {/* 2. Empty state — only AFTER a search and NOT loading */}
+  {!isLoading &&
+    debouncedSearchQuery.length > 0 &&
+    results.length === 0 && (
+      <div className="animate-in fade-in-50 duration-300">
+        <Empty className="from-cyan-100 to-blue-300 h-full bg-gradient-to-b from-20%">
+          <EmptyHeader>
+            <EmptyTitle>Uh… Hello?</EmptyTitle>
+            <EmptyDescription>
+              We searched everywhere...<br />Nothing matched &ldquo;
+              {debouncedSearchQuery}&rdquo;.<br />
+              Not even in the weird basement of Spotify.
+            </EmptyDescription>
+          </EmptyHeader>
+        </Empty>
       </div>
+    )}
+
+  {/* 3. Results */}
+  {!isLoading && results.length > 0 && (
+    <div className="animate-in fade-in-50 duration-300">
+      {results.map((item) => (
+        <ResultItem key={item.id} {...item} />
+      ))}
+    </div>
+  )}
+
+  {/* 4. Error */}
+  {isError && (
+    <div className="animate-in fade-in-50 duration-300">
+      <p>Error fetching results. Please try again later.</p>
+    </div>
+  )}
+</div>
+
     </div>
   )
 }
