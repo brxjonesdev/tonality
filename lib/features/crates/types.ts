@@ -1,15 +1,26 @@
 export type Crate = {
     id: string;
-    name: string;
-    ownerId: string;
-    description: string;
-    createdAt: string;
-    updatedAt: string;
-    slug: string;
-    isPublic: boolean;
-    isCollaborative: boolean;
-    coverImageUrl?: string;
-    trackCount: number;
-    // tracks?: CrateTrack[];
 }
 
+export type CreateCrate = {
+    name: string;
+    description: string;
+    isPublic: boolean;
+}
+
+export type CrateSubmission = {
+    id: string;
+}
+
+export type CrateCollaborator = {
+    id: string;
+    userId: string;
+    crateId: string;
+}
+
+export type CrateTrack = {
+    id: string;
+    crateId: string;
+    trackId: string;
+    order: number;
+}
