@@ -11,3 +11,13 @@ export interface MediaRateReview {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export interface Review {
+  id: string;
+  userId: string;
+  itemId: string;  // could be track/album/artist id
+  rating: number;
+  reviewText?: string;
+  createdAt: string;
+  updatedAt: string;
+}
