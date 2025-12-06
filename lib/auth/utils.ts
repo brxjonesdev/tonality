@@ -1,3 +1,4 @@
+import { betterAuth } from "better-auth"
 import { authClient } from "./auth-client"
 
 export const signIn = async () => {
@@ -27,5 +28,13 @@ export const signOut = async () => {
   } catch (error) {
     console.error("Sign out error:", error)
     throw error
+  }
+}
+
+export const checkClientAuth = async () => {
+  const { error } = await authClient.getSession()
+  if (error){
+    window.location.href = "/"
+    return null
   }
 }
