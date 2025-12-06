@@ -155,3 +155,9 @@ export function songTitleRandomizer(): string {
   const randomIndex = Math.floor(Math.random() * songs.length);
   return songs[randomIndex].title;
 }
+
+export function getSongTitle(): string {
+  const currentTime = Math.floor(Date.now() / 1000);
+  const index = Math.floor((currentTime / 60) % songs.length);
+  return songs[index].title;
+}

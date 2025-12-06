@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Figtree } from "next/font/google";
 import "./globals.css";
-import QueryProvider from "@/lib/shared/QueryProvider";
+import QueryProvider from "@/lib/shared/components/QueryProvider";
 
 const figtree = Figtree({
   subsets: ["latin"],
