@@ -2,7 +2,7 @@ import React from "react";
 import { auth } from "@/lib/auth/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import SearchBar from "@/lib/features/music-cache/search/components/searchbar";
+import SearchBar from "@/lib/features/search/components/searchbar";
 
 export default async function Homepage() {
   const session = await auth.api.getSession({

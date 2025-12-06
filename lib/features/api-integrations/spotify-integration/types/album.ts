@@ -4,6 +4,7 @@ import { SimplifiedArtist } from "./artist";
 export interface SimplifiedAlbum {
   album_type: "album" | "single" | "compilation";
   artists: SimplifiedArtist[];
+  artist?: SimplifiedArtist["name"];
   available_markets: string[];
   external_urls: ExternalUrls;
   href: string;

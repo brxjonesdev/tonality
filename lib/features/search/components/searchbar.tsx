@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useId, useState } from "react";
+import { useId, useState } from "react";
 import { Input } from "@/lib/components/shared/input";
 import { Label } from "@/lib/components/shared/label";
 import {
@@ -9,8 +9,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/lib/components/shared/select";
-import { getSongTitle, songTitleRandomizer } from "./placeholders";
-import ResultItem, { ResultItemProps } from "./searchresult";
+import { getSongTitle} from "./placeholders";
+import ResultItem from "./searchresult";
 import { useDebounce } from "@/lib/shared/hooks/useDebounce";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/lib/components/shared/button";
@@ -22,7 +22,9 @@ import {
 } from "@/lib/components/shared/empty";
 
 import { ScrollArea } from "@/lib/components/shared/scroll-area";
-import { formatSpotifyResults, spotifySearch } from "@/lib/features/spotify-integration/types/utils";
+import { spotifySearch } from "../../api-integrations/spotify-integration/search";
+import { formatSpotifyResults } from "../../api-integrations/spotify-integration/formatting";
+
 
 export default function SearchBar() {
   const id = useId();
@@ -30,7 +32,7 @@ export default function SearchBar() {
     "track"
   );
   const [searchQuery, setSearchQuery] = useState("");
-  const debouncedSearchQuery = useDebounce(searchQuery, 300);
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
   const {
     data: results = [],
@@ -46,11 +48,8 @@ export default function SearchBar() {
         throw new Error("Spotify Search Error");
       }
 
-      const results = formatSpotifyResults(
-        response.data,
-        searchMode
-      );
-       console.log("Formatted Results:", results);
+      const results = formatSpotifyResults(response.data, searchMode);
+      console.log("Formatted Results:", results);
       return results;
     },
     enabled: debouncedSearchQuery.length > 0,
@@ -121,7 +120,7 @@ export default function SearchBar() {
           debouncedSearchQuery.length > 0 &&
           results.length === 0 && (
             <div className="animate-in fade-in-50 duration-300">
-              <Empty className="from-cyan-100 to-blue-300 h-full bg-gradient-to-b from-20%">
+              <Empty className="from-cyan-100 to-blue-300 h-full bg-linear-to-b from-20%">
                 <EmptyHeader>
                   <EmptyTitle>Uh… Hello?</EmptyTitle>
                   <EmptyDescription>

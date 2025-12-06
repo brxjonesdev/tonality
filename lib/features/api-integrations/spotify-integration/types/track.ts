@@ -23,4 +23,17 @@ export interface Track {
   uri: string;
 }
 
+export type SimplifiedTrack = {
+  id: string;
+  name: string;
+  artist: string;
+  track_number: number;
+  duration_ms: number;
+  explicit: boolean;
+  preview_url: string | null;
+  uri: string;
+  images?: { url: string; height: number; width: number }[];
+  isrc?: string;
+}
+
 export type TrackSearchResults = PaginatedResults<Track>
