@@ -1,7 +1,7 @@
 import { Review } from "./types";
 
 export interface ReviewRepo {
-    crate(userId: string, itemId: string, rating: number, reviewText?: string): Promise<Review>;
+    create(userId: string, itemId: string, rating: number, reviewText?: string): Promise<Review>;
     getById(reviewId: string): Promise<Review | null>;
     update(userId: string, reviewId: string, rating?: number, reviewText?: string): Promise<Review | null>;
     delete(reviewId: string): Promise<boolean>;

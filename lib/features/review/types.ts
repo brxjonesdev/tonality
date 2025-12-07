@@ -15,7 +15,7 @@ export interface MediaRateReview {
 export interface Review {
   id: string;
   userId: string;
-  itemId: string;  // could be track/album/artist id
+  itemId: string; 
   rating: number;
   reviewText?: string;
   createdAt: string;
