@@ -20,4 +20,6 @@ export interface Review {
   reviewText?: string;
   createdAt: string;
   updatedAt: string;
+  edited: boolean;
+  type: "artist" | "album" | "track";
 }

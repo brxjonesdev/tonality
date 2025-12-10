@@ -1,6 +1,15 @@
 import { Result, ok, err} from "@/lib/utils"; 
 import { Review } from "./types";
 import { ReviewRepo } from "./review.repo";
+
+export interface Sorting {
+  sortBy: "date" | "rating";
+  order: "asc" | "desc";
+  filterBy?: "albumId" | "trackId";
+  filterValue?: string;
+  page?: number;
+  pageSize?: number;
+}
 export interface ReviewService {
   createReview(
     userId: string,
@@ -18,14 +27,14 @@ export interface ReviewService {
     reviewText?: string
   ): Promise<Result<Review, string>>;
 
-  deleteReview(reviewId: string): Promise<Result<boolean, string>>;
+  deleteReview(userId: string, reviewId: string): Promise<Result<boolean, string>>;
 
-  likeReview(reviewId: string, userId: string): Promise<Result<boolean, string>>;
-  unlikeReview(reviewId: string, userId: string): Promise<Result<boolean, string>>;
+  likeReview(reviewId: string, userId: string): Promise<Result<boolean| string, string>>;
+  unlikeReview(reviewId: string, userId: string): Promise<Result<boolean | string, string>>;
 
-  getArtistReviews(artistId: string): Promise<Result<Review[], string>>;
-  getAlbumReviews(albumId: string): Promise<Result<Review[], string>>;
-  getTrackReviews(trackId: string): Promise<Result<Review[], string>>;
+  getArtistReviews(artistId: string, sort:Sorting): Promise<Result<Review[], string>>;
+  getAlbumReviews(albumId: string, sort:Sorting): Promise<Result<Review[], string>>;
+  getTrackReviews(trackId: string, sort:Sorting): Promise<Result<Review[], string>>;
 }
 
 
@@ -39,10 +48,10 @@ export function createReviewService(repo: ReviewRepo): ReviewService {
         return err("Rating must be between 1 and 5");
       }
       const saveResult = await repo.create(userId, itemId, rating, reviewText);
-      if(!saveResult){
+      if(!saveResult.ok){
         return err("Failed to create review");
       }
-      return ok(saveResult);
+      return ok(saveResult.data);
     },
 
     async getReviewById(reviewId) {
@@ -67,7 +76,7 @@ export function createReviewService(repo: ReviewRepo): ReviewService {
       return ok(updatedReview);
     },
 
-    async deleteReview(reviewId) {
+    async deleteReview(userId, reviewId) {
       if (!reviewId) {
         return err("Invalid reviewId");
       }

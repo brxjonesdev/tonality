@@ -9,7 +9,11 @@
     "start": "next start",
     "lint": "eslint",
     "auth:generate": "dotenv -e .env -- npx @better-auth/cli generate",
-    "auth:migrate": "dotenv -e .env -- npx @better-auth/cli migrate"
+    "auth:migrate": "dotenv -e .env -- npx @better-auth/cli migrate",
+    "test": "vitest",
+    "test:watch": "vitest --watch",
+    "test:coverage": "vitest run --coverage",
+    "test:ui": "vitest --ui"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
@@ -76,6 +80,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@vitejs/plugin-react": "^5.1.1",
+    "@vitest/ui": "^4.0.15",
     "dotenv-cli": "^11.0.0",
     "eslint": "^9",
     "eslint-config-next": "15.5.6",
