@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { CratesRepo } from "./crates-repo";
 import { Crate, CrateSubmission, CrateTrack } from "./types";
 import { Result, ok, err } from "@/lib/utils";
 
@@ -8,7 +10,6 @@ export interface CratesService {
   getPopularCrates(): Promise<Result<Crate[], string>>;
   getNewCrates(): Promise<Result<Crate[], string>>;
   getUserCrates(userId: string): Promise<Result<Crate[], string>>;
-  getRandomUserCrates(): Promise<Result<Crate[], string>>;
 
   // Submissions
   getCrateSubmissions(crateId: string): Promise<Result<CrateSubmission[], string>>;
@@ -37,7 +38,7 @@ export interface CratesService {
   removeCollaborator(crateId: string, userId: string): Promise<Result<boolean, string>>;
 }
 
-export function createCratesService(repo: any): CratesService {
+export function createCratesService(repo: CratesRepo): CratesService {
   return {
     // FETCHERS
     async getCrateById(crateId: string) {
@@ -57,10 +58,6 @@ export function createCratesService(repo: any): CratesService {
     },
 
     async getUserCrates(userId: string) {
-      return ok<Crate[]>([]);
-    },
-
-    async getRandomUserCrates() {
       return ok<Crate[]>([]);
     },
 
@@ -117,7 +114,4 @@ export function createCratesService(repo: any): CratesService {
     async removeCollaborator(crateId: string, userId: string) {
       return ok(false);
     },
-  };
-}
-
-export const cratesService = createCratesService(null);
+  };}
