@@ -3,27 +3,41 @@ import { CratesRepo } from "./crates-repo";
 import { Crate, CrateSubmission, CrateTrack } from "./types";
 import { Result, ok, err } from "@/lib/utils";
 
+interface CreateCrateDTO {
+  name: string;
+  description?: string;
+  coverImage?: string;
+  tags?: string[];
+}
+
+interface UpdateCrateDTO {
+  name?: string;
+  description?: string;
+  coverImage?: string;
+  tags?: string[];
+}
+
 export interface CratesService {
-  // Fetchers
+  /** -------------------- FETCHERS -------------------- **/
   getCrateById(crateId: string): Promise<Result<Crate | null, string>>;
   getCratesIncludingTrack(trackId: string): Promise<Result<Crate[], string>>;
   getPopularCrates(): Promise<Result<Crate[], string>>;
   getNewCrates(): Promise<Result<Crate[], string>>;
   getUserCrates(userId: string): Promise<Result<Crate[], string>>;
-
-  // Submissions
   getCrateSubmissions(crateId: string): Promise<Result<CrateSubmission[], string>>;
 
-  // Mutators
-  createNewCrate(crateData: Crate): Promise<Result<Crate, string>>;
-  updateCrate(crateId: string, updates: Partial<Crate>): Promise<Result<Crate, string>>;
+  /** -------------------- MUTATORS -------------------- **/
+  createNewCrate(crateData: CreateCrateDTO): Promise<Result<Crate, string>>;
+  updateCrate(crateId: string, updates: UpdateCrateDTO): Promise<Result<Crate, string>>;
   deleteCrate(crateId: string): Promise<Result<boolean, string>>;
 
+  /** -------------------- TRACK ACTIONS -------------------- **/
   addTrackToCrate(crateId: string, trackId: string): Promise<Result<boolean, string>>;
   removeTrackFromCrate(crateId: string, trackId: string): Promise<Result<boolean, string>>;
   reorderTracks(crateId: string, newOrder: string[]): Promise<Result<boolean, string>>;
   getTracksInCrate(crateId: string): Promise<Result<CrateTrack[], string>>;
 
+  /** -------------------- SUBMISSIONS -------------------- **/
   submitTrackToCrate(
     fromID: string,
     toID: string,
@@ -34,9 +48,11 @@ export interface CratesService {
   acceptTrackSubmission(submissionId: string): Promise<Result<boolean, string>>;
   rejectTrackSubmission(submissionId: string): Promise<Result<boolean, string>>;
 
+  /** -------------------- COLLABORATORS -------------------- **/
   addCollaborator(crateId: string, userId: string): Promise<Result<boolean, string>>;
   removeCollaborator(crateId: string, userId: string): Promise<Result<boolean, string>>;
 }
+
 
 export function createCratesService(repo: CratesRepo): CratesService {
   return {
