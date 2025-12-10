@@ -13,7 +13,7 @@ export async function generateMetadata({
   const artistInfo = await spotifyService.getArtistInfoByID(id);
   
   if (!artistInfo.ok) {
-    return {
+    return { 
       title: slug.split("-").map(word => 
         word.charAt(0).toUpperCase() + word.slice(1)
       ).join(" "),
