@@ -373,15 +373,15 @@ describe("ReviewService", () => {
         it("should return reviews for a valid artistId", async () => {
             const sampleArtistReviews: Review[] = sampleReviews
             vi.mocked(mockRepo.getArtistReviews).mockResolvedValue(sampleArtistReviews);
-            const result = await reviewService.getArtistReviews("red-velvet");
+            const result = await reviewService.getArtistReviews("red-velvet", { sortBy: "date", order: "desc" });
             expect(result.ok).toBe(true);
             if (result.ok) {
                 expect(result.data).toEqual(sampleArtistReviews);
             }
-            expect(mockRepo.getArtistReviews).toHaveBeenCalledWith("red-velvet");
+            expect(mockRepo.getArtistReviews).toHaveBeenCalledWith("red-velvet", { sortBy: "date", order: "desc" });
         });
         it("should return an error for invalid artistId", async () => {
-            const result = await reviewService.getArtistReviews("");
+            const result = await reviewService.getArtistReviews("", { sortBy: "date", order: "desc" });
             expect(result.ok).toBe(false);
             if (!result.ok) {
                 expect(result.error).toBe("Invalid artistId");
