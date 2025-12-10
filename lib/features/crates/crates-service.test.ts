@@ -25,7 +25,6 @@ describe("CratesService", () => {
       getTracks: vi.fn(),
       submitTrack: vi.fn(),
     };
-
     cratesService = createCratesService(mockRepo);
   });
 
@@ -33,127 +32,175 @@ describe("CratesService", () => {
     vi.clearAllMocks();
   });
 
-
-  /** ---------------------- FETCHERS ---------------------- **/
-
   describe("getCrateById", () => {
-    it("should fetch a crate by ID", () => {
-      // TODO
-    });
+    it("returns crate on success");
+    it("returns error when crate does not exist");
+    it("returns error when repo returns undefined");
+    it("returns error on repo failure");
+    it("returns error on repo exception");
+    it("returns error when id is invalid");
   });
 
   describe("getCratesIncludingTrack", () => {
-    it("should fetch crates containing a track", () => {
-      // TODO
-    });
+    it("returns crates on success");
+    it("returns empty array if no crates found");
+    it("returns error if trackId is invalid");
+    it("returns error on repo failure");
+    it("returns error on repo exception");
+    it("returns error if repo returns undefined");
   });
 
   describe("getPopularCrates", () => {
-    it("should fetch popular crates", () => {
-      // TODO
-    });
+    it("returns crates on success");
+    it("returns empty list if none found");
+    it("returns error if repo returns malformed data");
+    it("returns error on repo failure");
+    it("returns error on repo exception");
+    it("returns error if repo returns undefined");
   });
 
   describe("getNewCrates", () => {
-    it("should fetch new crates", () => {
-      // TODO
-    });
+    it("returns crates on success");
+    it("returns empty list if repo has no new crates");
+    it("returns error on repo failure");
+    it("returns error on repo exception");
+    it("returns error if repo returns undefined");
+    it("returns error if crate shape is invalid");
   });
 
   describe("getUserCrates", () => {
-    it("should fetch user crates", () => {
-      // TODO
-    });
+    it("returns user crates on success");
+    it("returns empty list if user has no crates");
+    it("returns error if userId is invalid");
+    it("returns error on repo failure");
+    it("returns error on repo exception");
+    it("returns error if repo returns undefined");
   });
 
   describe("getCrateSubmissions", () => {
-    it("should fetch crate submissions", () => {
-      // TODO
-    });
+    it("returns submissions on success");
+    it("returns empty list if no submissions exist");
+    it("returns error if crateId is invalid");
+    it("returns error if repo returns undefined");
+    it("returns error on repo failure");
+    it("returns error on repo exception");
+    it("returns error on malformed submission data");
   });
 
-
-  /** ---------------------- MUTATORS ---------------------- **/
-
   describe("createNewCrate", () => {
-    it("should create a new crate", () => {
-      // TODO
-    });
+    it("creates crate successfully");
+    it("returns error if crateData missing fields");
+    it("returns error if crateData has invalid types");
+    it("returns error if crate with same name exists");
+    it("returns error if repo returns null");
+    it("returns error if repo returns undefined");
+    it("returns error on repo failure");
+    it("returns error on repo exception");
   });
 
   describe("updateCrate", () => {
-    it("should update a crate", () => {
-      // TODO
-    });
+    it("updates crate successfully");
+    it("returns error if crate does not exist");
+    it("returns error if updateData invalid");
+    it("returns error if updateData empty");
+    it("returns error if repo returns null");
+    it("returns error if repo returns undefined");
+    it("returns error on repo failure");
+    it("returns error on repo exception");
   });
 
   describe("deleteCrate", () => {
-    it("should delete a crate", () => {
-      // TODO
-    });
+    it("deletes crate successfully");
+    it("returns error if crate does not exist");
+    it("returns error if repo returns undefined");
+    it("returns error if repo prevents deletion due to constraints");
+    it("returns error on repo failure");
+    it("returns error on repo exception");
   });
 
-
-  /** ---------------------- TRACK ACTIONS ---------------------- **/
-
   describe("addTrackToCrate", () => {
-    it("should add a track to a crate", () => {
-      // TODO
-    });
+    it("adds track successfully");
+    it("returns error if crate does not exist");
+    it("returns error if track already exists");
+    it("returns error if trackId invalid");
+    it("returns error if repo returns undefined");
+    it("returns error on repo failure");
+    it("returns error on repo exception");
   });
 
   describe("removeTrackFromCrate", () => {
-    it("should remove a track from a crate", () => {
-      // TODO
-    });
+    it("removes track successfully");
+    it("returns error if crate does not exist");
+    it("returns error if track not found in crate");
+    it("returns error if repo returns undefined");
+    it("returns error on repo failure");
+    it("returns error on repo exception");
   });
 
   describe("reorderTracks", () => {
-    it("should reorder tracks", () => {
-      // TODO
-    });
+    it("reorders tracks successfully");
+    it("returns error if order array does not match existing tracks");
+    it("returns error if order contains missing ids");
+    it("returns error if order contains extra ids");
+    it("returns error if repo returns undefined");
+    it("returns error on repo failure");
+    it("returns error on repo exception");
+    it("returns error if crate does not exist");
   });
 
   describe("getTracksInCrate", () => {
-    it("should get tracks in a crate", () => {
-      // TODO
-    });
+    it("returns tracks on success");
+    it("returns empty list when crate has no tracks");
+    it("returns error if crateId invalid");
+    it("returns error if repo returns undefined");
+    it("returns error on repo failure");
+    it("returns error on repo exception");
+    it("returns error on malformed track entry");
   });
 
-
-  /** ---------------------- SUBMISSIONS ---------------------- **/
-
   describe("submitTrackToCrate", () => {
-    it("should submit a track to a crate", () => {
-      // TODO
-    });
+    it("submits track successfully");
+    it("returns error if track already submitted");
+    it("returns error if crate does not exist");
+    it("returns error if trackId invalid");
+    it("returns error if repo returns undefined");
+    it("returns error on repo failure");
+    it("returns error on repo exception");
   });
 
   describe("acceptTrackSubmission", () => {
-    it("should accept a track submission", () => {
-      // TODO
-    });
+    it("accepts submission successfully");
+    it("returns error if submission does not exist");
+    it("returns error if submission already accepted");
+    it("returns error if repo returns undefined");
+    it("returns error on repo failure");
+    it("returns error on repo exception");
   });
 
   describe("rejectTrackSubmission", () => {
-    it("should reject a track submission", () => {
-      // TODO
-    });
+    it("rejects submission successfully");
+    it("returns error if submission does not exist");
+    it("returns error if repo returns undefined");
+    it("returns error on repo failure");
+    it("returns error on repo exception");
   });
 
-
-  /** ---------------------- COLLABORATORS ---------------------- **/
-
   describe("addCollaborator", () => {
-    it("should add a collaborator to a crate", () => {
-      // TODO
-    });
+    it("adds collaborator successfully");
+    it("returns error if crate does not exist");
+    it("returns error if collaborator already exists");
+    it("returns error if userId invalid");
+    it("returns error if repo returns undefined");
+    it("returns error on repo failure");
+    it("returns error on repo exception");
   });
 
   describe("removeCollaborator", () => {
-    it("should remove a collaborator from a crate", () => {
-      // TODO
-    });
+    it("removes collaborator successfully");
+    it("returns error if crate does not exist");
+    it("returns error if collaborator not found");
+    it("returns error if repo returns undefined");
+    it("returns error on repo failure");
+    it("returns error on repo exception");
   });
-
 });
