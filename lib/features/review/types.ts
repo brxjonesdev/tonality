@@ -23,3 +23,16 @@ export interface Review {
   edited: boolean;
   type: "artist" | "album" | "track";
 }
+
+export interface ReviewCreateDTO {
+  userId: string;
+  itemId: string;
+  rating: number;
+  reviewText?: string;
+}
+
+export interface ReviewUpdateDTO {
+  reviewId: string;
+  rating?: number;
+  reviewText?: string;
+}

@@ -1,5 +1,5 @@
 import { Result, ok, err} from "@/lib/utils"; 
-import { Review } from "./types";
+import { Review, ReviewCreateDTO, ReviewUpdateDTO } from "./types";
 import { ReviewRepo } from "./review.repo";
 
 export interface Sorting {
@@ -11,20 +11,11 @@ export interface Sorting {
   pageSize?: number;
 }
 export interface ReviewService {
-  createReview(
-    userId: string,
-    itemId: string,
-    rating: number,
-    reviewText: string
-  ): Promise<Result<Review, string>>;
+  createReview(review: ReviewCreateDTO ): Promise<Result<Review, string>>;
 
   getReviewById(reviewId: string): Promise<Result<Review, string>>;
 
-  updateReview(
-    userId: string,
-    reviewId: string,
-    rating?: number,
-    reviewText?: string
+  updateReview(userID: string ,review: ReviewUpdateDTO
   ): Promise<Result<Review, string>>;
 
   deleteReview(userId: string, reviewId: string): Promise<Result<boolean, string>>;
@@ -40,7 +31,7 @@ export interface ReviewService {
 
 export function createReviewService(repo: ReviewRepo): ReviewService {
   return {
-    async createReview(userId, itemId, rating, reviewText) {
+    async createReview({ userId, itemId, rating, reviewText }: ReviewCreateDTO) {
       if (!userId || !itemId) {
         return err("Invalid userId or itemId");
       }
@@ -65,11 +56,14 @@ export function createReviewService(repo: ReviewRepo): ReviewService {
       return ok(review);
     },
 
-    async updateReview(reviewId, rating, reviewText) {
+    async updateReview(userId, { reviewId, rating, reviewText }: ReviewUpdateDTO) {
       if (!reviewId) {
         return err("Invalid reviewId");
       }
-      const updatedReview = await repo.update(reviewId, rating, reviewText);
+      if (rating !== undefined && (rating < 1 || rating > 5)) {
+        return err("Rating must be between 1 and 5");
+      }
+      const updatedReview = await repo.update(userId, reviewId, rating, reviewText);
       if (!updatedReview) {
         return err("Failed to update review");
       }
