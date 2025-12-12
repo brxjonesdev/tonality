@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { Result } from "@/lib/utils";
 import { Crate } from "./types";
 
 export interface CratesRepo {
-    getById(crateId: string): Promise<Crate | null>;
+    getById(crateId: string): Promise<Result<Crate, string>>;
     getByTrackID(trackId: string): Promise<Crate[]>;
     getCrates(type: "popular" | "new"): Promise<Crate[]>;
     getByUserID(userId: string): Promise<Crate[]>;

@@ -2,10 +2,38 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { CratesService, createCratesService } from "./crates-service";
 import { CratesRepo } from "./crates-repo";
 import { ok, err } from "../../../lib/utils";
+import { Crate } from "./types";
 
 describe("CratesService", () => {
   let mockRepo: CratesRepo;
   let cratesService: CratesService;
+  const sampleCrate: Crate = {
+    id: "crate1",
+    name: "Chill Vibes",
+    description: "A collection of relaxing tracks.",
+    coverImage: "http://example.com/cover.jpg",
+    tags: ["chill", "relax"],
+    creatorId: "user1",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  }
+  // random ammount of crates
+  const generateCrates = (count: number): Crate[] => {
+    const crates: Crate[] = [];
+    for (let i = 0; i < count; i++) {
+      crates.push({
+        id: `crate${i}`,
+        name: `Crate ${i}`,
+        description: `Description for crate ${i}`,
+        coverImage: `http://example.com/cover${i}.jpg`,
+        tags: [`tag${i}`, `tag${i+1}`],
+        creatorId: `user${i % 5}`,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+    }
+    return crates;
+  };
 
   beforeEach(() => {
     mockRepo = {
@@ -33,8 +61,24 @@ describe("CratesService", () => {
   });
 
   describe("getCrateById", () => {
-    it("returns crate on success");
-    it("returns error when crate does not exist");
+    it("returns crate on success", async () => {
+      vi.mocked(mockRepo.getById).mockResolvedValueOnce(ok(sampleCrate));
+      const result = await cratesService.getCrateById("crate1");
+      expect(result.ok).toBe(true);
+      if (result.ok) {
+        expect(result.data).toEqual(sampleCrate);
+      }
+      expect(mockRepo.getById).toHaveBeenCalledWith("crate1");
+    });
+    it("returns error when crate does not exist", async () => {
+      vi.mocked(mockRepo.getById).mockResolvedValueOnce(err("Crate not found"));
+      const result = await cratesService.getCrateById("nonexistent");
+      expect(result.ok).toBe(false);
+      if (!result.ok) {
+        expect(result.error).toBe("Crate not found");
+      }
+      expect(mockRepo.getById).toHaveBeenCalledWith("nonexistent");
+    });
     it("returns error when repo returns undefined");
     it("returns error on repo failure");
     it("returns error on repo exception");

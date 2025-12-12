@@ -1,4 +1,4 @@
-import AuthButton from "@/lib/auth/components/auth-button";
+import AuthButton from "@/lib/components/auth/components/auth-button";
 import Image from "next/image";
 
 export default function Home() {
