@@ -1,21 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { CratesRepo } from "./crates-repo";
-import { Crate, CrateSubmission, CrateTrack } from "./types";
+import { Crate, CrateSubmission, CrateTrack, CreateCrateDTO, UpdateCrateDTO } from "./types";
 import { Result, ok, err } from "@/lib/utils";
 
-interface CreateCrateDTO {
-  name: string;
-  description?: string;
-  coverImage?: string;
-  tags?: string[];
-}
 
-interface UpdateCrateDTO {
-  name?: string;
-  description?: string;
-  coverImage?: string;
-  tags?: string[];
-}
 
 export interface CratesService {
   /** -------------------- FETCHERS -------------------- **/
@@ -27,8 +15,8 @@ export interface CratesService {
   getCrateSubmissions(crateId: string): Promise<Result<CrateSubmission[], string>>;
 
   /** -------------------- MUTATORS -------------------- **/
-  createNewCrate(crateData: CreateCrateDTO): Promise<Result<Crate, string>>;
-  updateCrate(crateId: string, updates: UpdateCrateDTO): Promise<Result<Crate, string>>;
+  createNewCrate(crateData: CreateCrateDTO, userID: string): Promise<Result<Crate, string>>;
+  updateCrate(crateId: string, updates: UpdateCrateDTO, userID: string): Promise<Result<Crate, string>>;
   deleteCrate(crateId: string): Promise<Result<boolean, string>>;
 
   /** -------------------- TRACK ACTIONS -------------------- **/
@@ -58,28 +46,28 @@ export function createCratesService(repo: CratesRepo): CratesService {
   return {
     // FETCHERS
     async getCrateById(crateId: string) {
-      return ok<Crate | null>(null);
+      return err("not implemented");
     },
 
     async getCratesIncludingTrack(trackId: string) {
-      return ok<Crate[]>([]);
+      return err("not implemented");
     },
 
     async getPopularCrates() {
-      return ok<Crate[]>([]);
+      return err("not implemented");
     },
 
     async getNewCrates() {
-      return ok<Crate[]>([]);
+      return err("not implemented");
     },
 
     async getUserCrates(userId: string) {
-      return ok<Crate[]>([]);
+      return err("not implemented");
     },
 
     // SUBMISSIONS
     async getCrateSubmissions(crateId: string) {
-      return ok<CrateSubmission[]>([]);
+      return err("not implemented");
     },
 
     // MUTATORS
@@ -92,42 +80,43 @@ export function createCratesService(repo: CratesRepo): CratesService {
     },
 
     async deleteCrate(crateId: string) {
-      return ok(false);
+      return err("not implemented");
     },
 
     async addTrackToCrate(crateId: string, trackId: string) {
-      return ok(false);
+      return err("not implemented");
     },
 
     async removeTrackFromCrate(crateId: string, trackId: string) {
-      return ok(false);
+      return err("not implemented");
     },
 
     async reorderTracks(crateId: string, newOrder: string[]) {
-      return ok(false);
+      return err("not implemented");
     },
 
     async getTracksInCrate(crateId: string) {
-      return ok<CrateTrack[]>([]);
+      return err("not implemented");
     },
 
     async submitTrackToCrate(fromID, toID, trackId, crateID) {
-      return ok(false);
+      return err("not implemented");
     },
 
     async acceptTrackSubmission(submissionId: string) {
-      return ok(false);
+      return err("not implemented");
     },
 
     async rejectTrackSubmission(submissionId: string) {
-      return ok(false);
+      return err("not implemented");
     },
 
     async addCollaborator(crateId: string, userId: string) {
-      return ok(false);
+      return err("not implemented");
     },
 
     async removeCollaborator(crateId: string, userId: string) {
-      return ok(false);
+      return err("not implemented");
     },
-  };}
+  };
+}
