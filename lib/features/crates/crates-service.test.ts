@@ -622,12 +622,51 @@ describe("CratesService", () => {
   });
 
   describe("removeTrackFromCrate", () => {
-    it("removes track successfully");
-    it("returns error if crate does not exist");
-    it("returns error if track not found in crate");
-    it("returns error if repo returns undefined");
-    it("returns error on repo failure");
-    it("returns error on repo exception");
+    it("removes track successfully", async () => {
+      vi.mocked(mockRepo.removeTrack).mockResolvedValueOnce(ok(true));
+      const result = await cratesService.removeTrackFromCrate("crate1", "track1");
+      expect(result.ok).toBe(true);
+      if (result.ok) {
+        expect(result.data).toBe(true);
+      }
+      expect(mockRepo.removeTrack).toHaveBeenCalledWith("crate1", "track1");
+    });
+    it("returns error if crate does not exist", async () => {
+      const result = await cratesService.removeTrackFromCrate("nonexistent", "track1");
+      expect(result.ok).toBe(false);
+      if (!result.ok) {
+        expect(result.error).toBe("Crate not found");
+      }
+      expect(mockRepo.getById).toHaveBeenCalledWith("nonexistent");
+      expect(mockRepo.removeTrack).not.toHaveBeenCalled();
+    });
+    it("returns error if track not found in crate", async () => {
+      const result = await cratesService.removeTrackFromCrate("crate1", "missingTrack");
+      expect(result.ok).toBe(false);
+      if (!result.ok) {
+        expect(result.error).toBe("Track not found in crate");
+      }
+      expect(mockRepo.checkTrackExists).toHaveBeenCalledWith("crate1", "missingTrack");
+      expect(mockRepo.removeTrack).not.toHaveBeenCalled();
+    });
+    it("returns error if repo returns undefined", async () => {
+      vi.mocked(mockRepo.removeTrack).mockResolvedValueOnce(undefined as any);
+      const result = await cratesService.removeTrackFromCrate("crate1", "track1");
+      expect(result.ok).toBe(false);
+      if (!result.ok) {
+        expect(result.error).toBe("Malformed data received from repository");
+      }
+      expect(mockRepo.removeTrack).toHaveBeenCalledWith("crate1", "track1");
+    });
+    it("returns error on repo failure", async () => {
+      vi.mocked(mockRepo.removeTrack).mockRejectedValueOnce(new Error("Database error"));
+      const result = await cratesService.removeTrackFromCrate("crate1", "track1");
+      expect(result.ok).toBe(false);
+      if (!result.ok) {
+        expect(result.error).toBe("Database error");
+      }
+      expect(mockRepo.removeTrack).toHaveBeenCalledWith("crate1", "track1");
+    });
   });
 
   describe("reorderTracks", () => {
