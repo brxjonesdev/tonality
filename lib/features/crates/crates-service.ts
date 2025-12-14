@@ -1,9 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { CratesRepo } from "./crates-repo";
-import { Crate, CrateSubmission, CrateTrack, CreateCrateDTO, UpdateCrateDTO } from "./types";
+import {
+  Crate,
+  CrateSubmission,
+  CrateTrack,
+  CreateCrateDTO,
+  UpdateCrateDTO,
+} from "./types";
 import { Result, ok, err } from "@/lib/utils";
-
-
 
 export interface CratesService {
   /** -------------------- FETCHERS -------------------- **/
@@ -12,17 +16,36 @@ export interface CratesService {
   getPopularCrates(): Promise<Result<Crate[], string>>;
   getNewCrates(): Promise<Result<Crate[], string>>;
   getUserCrates(userId: string): Promise<Result<Crate[], string>>;
-  getCrateSubmissions(crateId: string): Promise<Result<CrateSubmission[], string>>;
+  getCrateSubmissions(
+    userId: string,
+    crateId: string,
+  ): Promise<Result<CrateSubmission[], string>>;
 
   /** -------------------- MUTATORS -------------------- **/
-  createNewCrate(crateData: CreateCrateDTO, userID: string): Promise<Result<Crate, string>>;
-  updateCrate(crateId: string, updates: UpdateCrateDTO, userID: string): Promise<Result<Crate, string>>;
+  createNewCrate(
+    crateData: CreateCrateDTO,
+    userID: string,
+  ): Promise<Result<Crate, string>>;
+  updateCrate(
+    crateId: string,
+    updates: UpdateCrateDTO,
+    userID: string,
+  ): Promise<Result<Crate, string>>;
   deleteCrate(crateId: string): Promise<Result<boolean, string>>;
 
   /** -------------------- TRACK ACTIONS -------------------- **/
-  addTrackToCrate(crateId: string, trackId: string): Promise<Result<boolean, string>>;
-  removeTrackFromCrate(crateId: string, trackId: string): Promise<Result<boolean, string>>;
-  reorderTracks(crateId: string, newOrder: string[]): Promise<Result<boolean, string>>;
+  addTrackToCrate(
+    crateId: string,
+    trackId: string,
+  ): Promise<Result<boolean, string>>;
+  removeTrackFromCrate(
+    crateId: string,
+    trackId: string,
+  ): Promise<Result<boolean, string>>;
+  reorderTracks(
+    crateId: string,
+    newOrder: string[],
+  ): Promise<Result<boolean, string>>;
   getTracksInCrate(crateId: string): Promise<Result<CrateTrack[], string>>;
 
   /** -------------------- SUBMISSIONS -------------------- **/
@@ -30,17 +53,16 @@ export interface CratesService {
     fromID: string,
     toID: string,
     trackId: string,
-    crateID: string
+    crateID: string,
   ): Promise<Result<boolean, string>>;
 
   acceptTrackSubmission(submissionId: string): Promise<Result<boolean, string>>;
   rejectTrackSubmission(submissionId: string): Promise<Result<boolean, string>>;
-
-  /** -------------------- COLLABORATORS -------------------- **/
-  addCollaborator(crateId: string, userId: string): Promise<Result<boolean, string>>;
-  removeCollaborator(crateId: string, userId: string): Promise<Result<boolean, string>>;
+  getCrateSubmissions(
+    userId: string,
+    crateId: string,
+  ): Promise<Result<CrateSubmission[], string>>;
 }
-
 
 export function createCratesService(repo: CratesRepo): CratesService {
   return {
@@ -66,7 +88,7 @@ export function createCratesService(repo: CratesRepo): CratesService {
     },
 
     // SUBMISSIONS
-    async getCrateSubmissions(crateId: string) {
+    async getCrateSubmissions(userId: string, crateId: string) {
       return err("not implemented");
     },
 
@@ -108,14 +130,6 @@ export function createCratesService(repo: CratesRepo): CratesService {
     },
 
     async rejectTrackSubmission(submissionId: string) {
-      return err("not implemented");
-    },
-
-    async addCollaborator(crateId: string, userId: string) {
-      return err("not implemented");
-    },
-
-    async removeCollaborator(crateId: string, userId: string) {
       return err("not implemented");
     },
   };
