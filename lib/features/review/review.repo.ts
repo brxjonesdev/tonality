@@ -8,14 +8,18 @@ export interface ReviewRepo {
     rating: number,
     reviewText?: string,
   ): Promise<Result<Review, string>>;
-  getById(reviewId: string): Promise<Review | null>;
+  getById(reviewId: string): Promise<Result<Review, string>>;
+  getByUserAndItem(
+    userId: string,
+    itemId: string,
+  ): Promise<Result<Review | null, string>>;
   update(
     userId: string,
     reviewId: string,
     rating?: number,
     reviewText?: string,
   ): Promise<Result<Review, string>>;
-  delete(reviewId: string): Promise<boolean>;
+  delete(reviewId: string): Promise<Result<boolean, string>>;
   like(
     reviewId: string,
     userId: string,
@@ -24,7 +28,7 @@ export interface ReviewRepo {
     reviewId: string,
     userId: string,
   ): Promise<Result<boolean | string, string>>;
-  getArtistReviews(artistId: string): Promise<Review[]>;
-  getAlbumReviews(albumId: string): Promise<Review[]>;
-  getTrackReviews(trackId: string): Promise<Review[]>;
+  getArtistReviews(artistId: string): Promise<Result<Review[], string>>;
+  getAlbumReviews(albumId: string): Promise<Result<Review[], string>>;
+  getTrackReviews(trackId: string): Promise<Result<Review[], string>>;
 }
