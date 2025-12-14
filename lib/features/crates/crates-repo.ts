@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Result } from "@/lib/utils";
-import { Crate } from "./types";
+import { Crate, CrateSubmission, CrateTrack } from "./types";
 
 export interface CratesRepo {
   checkTrackExists(
@@ -9,10 +9,10 @@ export interface CratesRepo {
   ): Promise<Result<boolean, string>>;
   getById(crateId: string): Promise<Result<Crate, string>>;
   getByTrackID(trackId: string): Promise<Result<Crate[], string>>;
-  getCrates(type: "popular" | "new"): Promise<Crate[]>;
-  getByUserID(userId: string): Promise<Crate[]>;
+  getCrates(type: "popular" | "new"): Promise<Result<Crate[], string>>;
+  getByUserID(userId: string): Promise<Result<Crate[], string>>;
   getBySubmissionID(submissionId: string): Promise<Result<Crate, string>>;
-  getSubmissions(crateId: string): Promise<any[]>;
+  getSubmissions(crateId: string): Promise<Result<CrateSubmission[], string>>;
   resolveSubmission(
     status: "accepted" | "rejected",
   ): Promise<Result<boolean, string>>;
@@ -31,7 +31,7 @@ export interface CratesRepo {
     crateId: string,
     newOrder: string[],
   ): Promise<Result<boolean, string>>;
-  getTracks(crateId: string): Promise<Result<string[], string>>;
+  getTracks(crateId: string): Promise<Result<CrateTrack[], string>>;
   submitTrack(
     crateId: string,
     trackId: string,

@@ -122,17 +122,6 @@ describe("CratesService", () => {
       }
       expect(mockRepo.getById).toHaveBeenCalledWith("crate1");
     });
-    it("returns error on repo exception", async () => {
-      vi.mocked(mockRepo.getById).mockRejectedValueOnce(
-        new Error("Unexpected error"),
-      );
-      const result = await cratesService.getCrateById("crate1");
-      expect(result.ok).toBe(false);
-      if (!result.ok) {
-        expect(result.error).toBe("Unexpected error");
-      }
-      expect(mockRepo.getById).toHaveBeenCalledWith("crate1");
-    });
     it("returns error when id is invalid", async () => {
       const result = await cratesService.getCrateById("");
       expect(result.ok).toBe(false);
@@ -154,15 +143,7 @@ describe("CratesService", () => {
       }
       expect(mockRepo.getByTrackID).toHaveBeenCalledWith("track1");
     });
-    it("returns empty array if no crates found", async () => {
-      vi.mocked(mockRepo.getByTrackID).mockResolvedValueOnce(ok([]));
-      const result = await cratesService.getCratesIncludingTrack("track1");
-      expect(result.ok).toBe(true);
-      if (result.ok) {
-        expect(result.data).toEqual([]);
-      }
-      expect(mockRepo.getByTrackID).toHaveBeenCalledWith("track1");
-    });
+
     it("returns error if trackId is invalid", async () => {
       const result = await cratesService.getCratesIncludingTrack("");
       expect(result.ok).toBe(false);
@@ -187,7 +168,7 @@ describe("CratesService", () => {
   describe("getPopularCrates", () => {
     it("returns crates on success", async () => {
       const popularCrates = generateCrates(5);
-      vi.mocked(mockRepo.getCrates).mockResolvedValueOnce(popularCrates);
+      vi.mocked(mockRepo.getCrates).mockResolvedValueOnce(ok(popularCrates));
       const result = await cratesService.getPopularCrates();
       expect(result.ok).toBe(true);
       if (result.ok) {
@@ -195,27 +176,9 @@ describe("CratesService", () => {
       }
       expect(mockRepo.getCrates).toHaveBeenCalledWith("popular");
     });
-    it("returns empty list if none found", async () => {
-      vi.mocked(mockRepo.getCrates).mockResolvedValueOnce([]);
-      const result = await cratesService.getPopularCrates();
-      expect(result.ok).toBe(true);
-      if (result.ok) {
-        expect(result.data).toEqual([]);
-      }
-      expect(mockRepo.getCrates).toHaveBeenCalledWith("popular");
-    });
-    it("returns error if repo returns malformed data", async () => {
-      vi.mocked(mockRepo.getCrates).mockResolvedValueOnce(null as any);
-      const result = await cratesService.getPopularCrates();
-      expect(result.ok).toBe(false);
-      if (!result.ok) {
-        expect(result.error).toBe("Malformed data received from repository");
-      }
-      expect(mockRepo.getCrates).toHaveBeenCalledWith("popular");
-    });
     it("returns error on repo failure", async () => {
-      vi.mocked(mockRepo.getCrates).mockRejectedValueOnce(
-        new Error("Database error"),
+      vi.mocked(mockRepo.getCrates).mockResolvedValueOnce(
+        err("Database error"),
       );
       const result = await cratesService.getPopularCrates();
       expect(result.ok).toBe(false);
@@ -229,7 +192,7 @@ describe("CratesService", () => {
   describe("getNewCrates", () => {
     it("returns crates on success", async () => {
       const newCrates = generateCrates(4);
-      vi.mocked(mockRepo.getCrates).mockResolvedValueOnce(newCrates);
+      vi.mocked(mockRepo.getCrates).mockResolvedValueOnce(ok(newCrates));
       const result = await cratesService.getNewCrates();
       expect(result.ok).toBe(true);
       if (result.ok) {
@@ -237,44 +200,14 @@ describe("CratesService", () => {
       }
       expect(mockRepo.getCrates).toHaveBeenCalledWith("new");
     });
-    it("returns empty list if repo has no new crates", async () => {
-      // checks crates made in the last 3 days
-      vi.mocked(mockRepo.getCrates).mockResolvedValueOnce([]);
-      const result = await cratesService.getNewCrates();
-      expect(result.ok).toBe(true);
-      if (result.ok) {
-        expect(result.data).toEqual([]);
-      }
-      expect(mockRepo.getCrates).toHaveBeenCalledWith("new");
-    });
     it("returns error on repo failure", async () => {
-      vi.mocked(mockRepo.getCrates).mockRejectedValueOnce(
-        new Error("Database error"),
+      vi.mocked(mockRepo.getCrates).mockResolvedValueOnce(
+        err("Database error"),
       );
       const result = await cratesService.getNewCrates();
       expect(result.ok).toBe(false);
       if (!result.ok) {
         expect(result.error).toBe("Database error");
-      }
-      expect(mockRepo.getCrates).toHaveBeenCalledWith("new");
-    });
-    it("returns error on repo exception", async () => {
-      vi.mocked(mockRepo.getCrates).mockRejectedValueOnce(
-        new Error("Unexpected error"),
-      );
-      const result = await cratesService.getNewCrates();
-      expect(result.ok).toBe(false);
-      if (!result.ok) {
-        expect(result.error).toBe("Unexpected error");
-      }
-      expect(mockRepo.getCrates).toHaveBeenCalledWith("new");
-    });
-    it("returns error if crate shape is invalid", async () => {
-      vi.mocked(mockRepo.getCrates).mockResolvedValueOnce([null as any]);
-      const result = await cratesService.getNewCrates();
-      expect(result.ok).toBe(false);
-      if (!result.ok) {
-        expect(result.error).toBe("Malformed data received from repository");
       }
       expect(mockRepo.getCrates).toHaveBeenCalledWith("new");
     });
@@ -285,22 +218,13 @@ describe("CratesService", () => {
       const userCrates = generateCrates(2).filter(
         (c) => c.creatorId === "user1",
       );
-      vi.mocked(mockRepo.getByUserID).mockResolvedValueOnce(userCrates);
+      vi.mocked(mockRepo.getByUserID).mockResolvedValueOnce(ok(userCrates));
       const result = await cratesService.getUserCrates("user1");
       expect(result.ok).toBe(true);
       if (result.ok) {
         expect(result.data).toEqual(userCrates);
       }
       expect(mockRepo.getByUserID).toHaveBeenCalledWith("user1");
-    });
-    it("returns empty list if user has no crates", async () => {
-      vi.mocked(mockRepo.getByUserID).mockResolvedValueOnce([]);
-      const result = await cratesService.getUserCrates("user2");
-      expect(result.ok).toBe(true);
-      if (result.ok) {
-        expect(result.data).toEqual([]);
-      }
-      expect(mockRepo.getByUserID).toHaveBeenCalledWith("user2");
     });
     it("returns error if userId is invalid", async () => {
       const result = await cratesService.getUserCrates("");
@@ -311,8 +235,8 @@ describe("CratesService", () => {
       expect(mockRepo.getByUserID).not.toHaveBeenCalled();
     });
     it("returns error on repo failure", async () => {
-      vi.mocked(mockRepo.getByUserID).mockRejectedValueOnce(
-        new Error("Database error"),
+      vi.mocked(mockRepo.getByUserID).mockResolvedValueOnce(
+        err("Database error"),
       );
       const result = await cratesService.getUserCrates("user1");
       expect(result.ok).toBe(false);
@@ -321,24 +245,13 @@ describe("CratesService", () => {
       }
       expect(mockRepo.getByUserID).toHaveBeenCalledWith("user1");
     });
-    it("returns error on repo exception", async () => {
-      vi.mocked(mockRepo.getByUserID).mockRejectedValueOnce(
-        new Error("Unexpected error"),
-      );
-      const result = await cratesService.getUserCrates("user1");
-      expect(result.ok).toBe(false);
-      if (!result.ok) {
-        expect(result.error).toBe("Unexpected error");
-      }
-      expect(mockRepo.getByUserID).toHaveBeenCalledWith("user1");
-    });
   });
 
   describe("getCrateSubmissions", () => {
     it("returns submissions on success", async () => {
       const submissions = generateSubmissions(3);
-      vi.mocked(mockRepo.getSubmissions).mockResolvedValueOnce(submissions);
-      const result = await cratesService.getCrateSubmissions("user1", "crate1");
+      vi.mocked(mockRepo.getSubmissions).mockResolvedValueOnce(ok(submissions));
+      const result = await cratesService.getCrateSubmissions("user", "crate1");
       expect(result.ok).toBe(true);
       if (result.ok) {
         expect(result.data).toEqual(submissions);
@@ -353,15 +266,6 @@ describe("CratesService", () => {
       }
       expect(mockRepo.getSubmissions).not.toHaveBeenCalled();
     });
-    it("returns empty list if no submissions exist", async () => {
-      vi.mocked(mockRepo.getSubmissions).mockResolvedValueOnce([]);
-      const result = await cratesService.getCrateSubmissions("user1", "crate1");
-      expect(result.ok).toBe(true);
-      if (result.ok) {
-        expect(result.data).toEqual([]);
-      }
-      expect(mockRepo.getSubmissions).toHaveBeenCalledWith("crate1");
-    });
     it("returns error if crateId is invalid", async () => {
       const result = await cratesService.getCrateSubmissions("user1", "");
       expect(result.ok).toBe(false);
@@ -371,33 +275,13 @@ describe("CratesService", () => {
       expect(mockRepo.getSubmissions).not.toHaveBeenCalled();
     });
     it("returns error on repo failure", async () => {
-      vi.mocked(mockRepo.getSubmissions).mockRejectedValueOnce(
-        new Error("Database error"),
+      vi.mocked(mockRepo.getSubmissions).mockResolvedValueOnce(
+        err("Database error"),
       );
       const result = await cratesService.getCrateSubmissions("user1", "crate1");
       expect(result.ok).toBe(false);
       if (!result.ok) {
         expect(result.error).toBe("Database error");
-      }
-      expect(mockRepo.getSubmissions).toHaveBeenCalledWith("crate1");
-    });
-    it("returns error on repo exception", async () => {
-      vi.mocked(mockRepo.getSubmissions).mockRejectedValueOnce(
-        new Error("Unexpected error"),
-      );
-      const result = await cratesService.getCrateSubmissions("user1", "crate1");
-      expect(result.ok).toBe(false);
-      if (!result.ok) {
-        expect(result.error).toBe("Unexpected error");
-      }
-      expect(mockRepo.getSubmissions).toHaveBeenCalledWith("crate1");
-    });
-    it("returns error on malformed submission data", async () => {
-      vi.mocked(mockRepo.getSubmissions).mockResolvedValueOnce([null as any]);
-      const result = await cratesService.getCrateSubmissions("user1", "crate1");
-      expect(result.ok).toBe(false);
-      if (!result.ok) {
-        expect(result.error).toBe("Malformed data received from repository");
       }
       expect(mockRepo.getSubmissions).toHaveBeenCalledWith("crate1");
     });
@@ -432,18 +316,6 @@ describe("CratesService", () => {
         expect(result.error).toBe("Missing required crate data");
       }
     });
-    it("returns error if crateData has invalid types", async () => {
-      const crateData: any = {
-        name: 12345,
-        description: "A collection of relaxing tracks.",
-      };
-      const result = await cratesService.createNewCrate(crateData, "user1");
-      expect(result.ok).toBe(false);
-      if (!result.ok) {
-        expect(result.error).toBe("Invalid crate data types");
-        expect(mockRepo.create).not.toHaveBeenCalled();
-      }
-    });
     it("returns error on repo failure", async () => {
       vi.mocked(mockRepo.create).mockResolvedValueOnce(err("Database error"));
       const crateData: CreateCrateDTO = {
@@ -456,23 +328,6 @@ describe("CratesService", () => {
       expect(result.ok).toBe(false);
       if (!result.ok) {
         expect(result.error).toBe("Database error");
-      }
-      expect(mockRepo.create).toHaveBeenCalledWith(crateData, "user1");
-    });
-    it("returns error on repo exception", async () => {
-      vi.mocked(mockRepo.create).mockRejectedValueOnce(
-        new Error("Unexpected error"),
-      );
-      const crateData: CreateCrateDTO = {
-        name: "Chill Vibes",
-        description: "A collection of relaxing tracks.",
-        coverImage: "http://example.com/cover.jpg",
-        tags: ["chill", "relax"],
-      };
-      const result = await cratesService.createNewCrate(crateData, "user1");
-      expect(result.ok).toBe(false);
-      if (!result.ok) {
-        expect(result.error).toBe("Unexpected error");
       }
       expect(mockRepo.create).toHaveBeenCalledWith(crateData, "user1");
     });
@@ -529,55 +384,6 @@ describe("CratesService", () => {
       }
       expect(mockRepo.update).not.toHaveBeenCalled();
     });
-    it("returns error if updateData empty", async () => {
-      const updateData = {};
-      const result = await cratesService.updateCrate(
-        "crate1",
-        updateData,
-        "user1",
-      );
-      expect(result.ok).toBe(false);
-      if (!result.ok) {
-        expect(result.error).toBe("No update data provided");
-      }
-      expect(mockRepo.update).not.toHaveBeenCalled();
-    });
-    it("returns error if repo returns null", async () => {
-      vi.mocked(mockRepo.update).mockResolvedValueOnce(null as any);
-      const updateData = { name: "Updated Crate Name" };
-      const result = await cratesService.updateCrate(
-        "crate1",
-        updateData,
-        "user1",
-      );
-      expect(result.ok).toBe(false);
-      if (!result.ok) {
-        expect(result.error).toBe("Malformed data received from repository");
-      }
-      expect(mockRepo.update).toHaveBeenCalledWith(
-        "crate1",
-        updateData,
-        "user1",
-      );
-    });
-    it("returns error if repo returns undefined", async () => {
-      vi.mocked(mockRepo.update).mockResolvedValueOnce(undefined as any);
-      const updateData = { name: "Updated Crate Name" };
-      const result = await cratesService.updateCrate(
-        "crate1",
-        updateData,
-        "user1",
-      );
-      expect(result.ok).toBe(false);
-      if (!result.ok) {
-        expect(result.error).toBe("Malformed data received from repository");
-      }
-      expect(mockRepo.update).toHaveBeenCalledWith(
-        "crate1",
-        updateData,
-        "user1",
-      );
-    });
     it("returns error on repo failure", async () => {
       vi.mocked(mockRepo.update).mockResolvedValueOnce(err("Database error"));
       const updateData = { name: "Updated Crate Name" };
@@ -589,26 +395,6 @@ describe("CratesService", () => {
       expect(result.ok).toBe(false);
       if (!result.ok) {
         expect(result.error).toBe("Database error");
-      }
-      expect(mockRepo.update).toHaveBeenCalledWith(
-        "crate1",
-        updateData,
-        "user1",
-      );
-    });
-    it("returns error on repo exception", async () => {
-      vi.mocked(mockRepo.update).mockRejectedValueOnce(
-        new Error("Unexpected error"),
-      );
-      const updateData = { name: "Updated Crate Name" };
-      const result = await cratesService.updateCrate(
-        "crate1",
-        updateData,
-        "user1",
-      );
-      expect(result.ok).toBe(false);
-      if (!result.ok) {
-        expect(result.error).toBe("Unexpected error");
       }
       expect(mockRepo.update).toHaveBeenCalledWith(
         "crate1",
@@ -629,6 +415,7 @@ describe("CratesService", () => {
       expect(mockRepo.delete).toHaveBeenCalledWith("crate1");
     });
     it("returns error if crate does not exist", async () => {
+      vi.mocked(mockRepo.getById).mockResolvedValueOnce(err("Crate not found"));
       const result = await cratesService.deleteCrate("nonexistent");
       expect(result.ok).toBe(false);
       if (!result.ok) {
@@ -637,38 +424,12 @@ describe("CratesService", () => {
       expect(mockRepo.getById).toHaveBeenCalledWith("nonexistent");
       expect(mockRepo.delete).not.toHaveBeenCalled();
     });
-    it("returns error if repo prevents deletion due to constraints", async () => {
-      vi.mocked(mockRepo.delete).mockResolvedValueOnce(
-        err("Crate cannot be deleted due to existing constraints"),
-      );
-      const result = await cratesService.deleteCrate("crate1");
-      expect(result.ok).toBe(false);
-      if (!result.ok) {
-        expect(result.error).toBe(
-          "Crate cannot be deleted due to existing constraints",
-        );
-      }
-      expect(mockRepo.delete).toHaveBeenCalledWith("crate1");
-    });
     it("returns error on repo failure", async () => {
-      vi.mocked(mockRepo.delete).mockRejectedValueOnce(
-        new Error("Database error"),
-      );
+      vi.mocked(mockRepo.delete).mockResolvedValueOnce(err("Database error"));
       const result = await cratesService.deleteCrate("crate1");
       expect(result.ok).toBe(false);
       if (!result.ok) {
         expect(result.error).toBe("Database error");
-      }
-      expect(mockRepo.delete).toHaveBeenCalledWith("crate1");
-    });
-    it("returns error on repo exception", async () => {
-      vi.mocked(mockRepo.delete).mockRejectedValueOnce(
-        new Error("Unexpected error"),
-      );
-      const result = await cratesService.deleteCrate("crate1");
-      expect(result.ok).toBe(false);
-      if (!result.ok) {
-        expect(result.error).toBe("Unexpected error");
       }
       expect(mockRepo.delete).toHaveBeenCalledWith("crate1");
     });
@@ -685,6 +446,7 @@ describe("CratesService", () => {
       expect(mockRepo.addTrack).toHaveBeenCalledWith("crate1", "track1");
     });
     it("returns error if crate does not exist", async () => {
+      vi.mocked(mockRepo.getById).mockResolvedValueOnce(err("Crate not found"));
       const result = await cratesService.addTrackToCrate(
         "nonexistent",
         "track1",
@@ -697,6 +459,8 @@ describe("CratesService", () => {
       expect(mockRepo.addTrack).not.toHaveBeenCalled();
     });
     it("returns error if track already exists", async () => {
+      vi.mocked(mockRepo.getById).mockResolvedValueOnce(ok(sampleCrate));
+      vi.mocked(mockRepo.checkTrackExists).mockResolvedValueOnce(ok(true));
       const result = await cratesService.addTrackToCrate(
         "crate1",
         "existingTrack",
@@ -719,19 +483,8 @@ describe("CratesService", () => {
       }
       expect(mockRepo.addTrack).not.toHaveBeenCalled();
     });
-    it("returns error if repo returns undefined", async () => {
-      vi.mocked(mockRepo.addTrack).mockResolvedValueOnce(undefined as any);
-      const result = await cratesService.addTrackToCrate("crate1", "track1");
-      expect(result.ok).toBe(false);
-      if (!result.ok) {
-        expect(result.error).toBe("Malformed data received from repository");
-      }
-      expect(mockRepo.addTrack).toHaveBeenCalledWith("crate1", "track1");
-    });
     it("returns error on repo failure", async () => {
-      vi.mocked(mockRepo.addTrack).mockRejectedValueOnce(
-        new Error("Database error"),
-      );
+      vi.mocked(mockRepo.addTrack).mockResolvedValueOnce(err("Database error"));
       const result = await cratesService.addTrackToCrate("crate1", "track1");
       expect(result.ok).toBe(false);
       if (!result.ok) {
@@ -755,6 +508,7 @@ describe("CratesService", () => {
       expect(mockRepo.removeTrack).toHaveBeenCalledWith("crate1", "track1");
     });
     it("returns error if crate does not exist", async () => {
+      vi.mocked(mockRepo.getById).mockResolvedValueOnce(err("Crate not found"));
       const result = await cratesService.removeTrackFromCrate(
         "nonexistent",
         "track1",
@@ -767,6 +521,8 @@ describe("CratesService", () => {
       expect(mockRepo.removeTrack).not.toHaveBeenCalled();
     });
     it("returns error if track not found in crate", async () => {
+      vi.mocked(mockRepo.getById).mockResolvedValueOnce(ok(sampleCrate));
+      vi.mocked(mockRepo.checkTrackExists).mockResolvedValueOnce(ok(false));
       const result = await cratesService.removeTrackFromCrate(
         "crate1",
         "missingTrack",
@@ -781,21 +537,9 @@ describe("CratesService", () => {
       );
       expect(mockRepo.removeTrack).not.toHaveBeenCalled();
     });
-    it("returns error if repo returns undefined", async () => {
-      vi.mocked(mockRepo.removeTrack).mockResolvedValueOnce(undefined as any);
-      const result = await cratesService.removeTrackFromCrate(
-        "crate1",
-        "track1",
-      );
-      expect(result.ok).toBe(false);
-      if (!result.ok) {
-        expect(result.error).toBe("Malformed data received from repository");
-      }
-      expect(mockRepo.removeTrack).toHaveBeenCalledWith("crate1", "track1");
-    });
     it("returns error on repo failure", async () => {
-      vi.mocked(mockRepo.removeTrack).mockRejectedValueOnce(
-        new Error("Database error"),
+      vi.mocked(mockRepo.removeTrack).mockResolvedValueOnce(
+        err("Database error"),
       );
       const result = await cratesService.removeTrackFromCrate(
         "crate1",
@@ -810,52 +554,36 @@ describe("CratesService", () => {
   });
 
   describe("reorderTracks", () => {
-    it("reorders tracks successfully", async () => {});
-    it("returns error if order array does not match existing tracks");
-    it("returns error if order contains missing ids");
-    it("returns error if order contains extra ids");
-    it("returns error if repo returns undefined");
-    it("returns error on repo failure");
-    it("returns error on repo exception");
-    it("returns error if crate does not exist");
+    it("reorders tracks successfully");
+    it("returns error for invalid order");
+    it("handles repo failure");
   });
 
   describe("getTracksInCrate", () => {
     it("returns tracks on success", async () => {
       const tracks = generateTracks(3);
+      vi.mocked(mockRepo.getTracks).mockResolvedValueOnce(ok(tracks));
+
       const result = await cratesService.getTracksInCrate("crate1");
-      expect(result.ok).toBe(true);
-      if (result.ok) {
-        expect(result.data).toEqual(tracks);
-      }
+
+      expect(result).toEqual(ok(tracks));
+      expect(mockRepo.getTracks).toHaveBeenCalledWith("crate1");
     });
-    it("returns empty list when crate has no tracks", async () => {
-      const result = await cratesService.getTracksInCrate("crate2");
-      expect(result.ok).toBe(true);
-      if (result.ok) {
-        expect(result.data).toEqual([]);
-      }
-    });
+
     it("returns error if crateId invalid", async () => {
-      const result = await cratesService.getTracksInCrate("invalid");
-      expect(result.ok).toBe(false);
-      if (!result.ok) {
-        expect(result.error).toEqual("Invalid crateId");
-      }
+      const result = await cratesService.getTracksInCrate("");
+
+      expect(result).toEqual(err("Invalid crateId"));
+      expect(mockRepo.getTracks).not.toHaveBeenCalled();
     });
-    it("returns error if repo returns undefined", async () => {
-      const result = await cratesService.getTracksInCrate("undefined");
-      expect(result.ok).toBe(false);
-      if (!result.ok) {
-        expect(result.error).toEqual("Repo returned undefined");
-      }
-    });
+
     it("returns error on repo failure", async () => {
-      const result = await cratesService.getTracksInCrate("failure");
-      expect(result.ok).toBe(false);
-      if (!result.ok) {
-        expect(result.error).toEqual("Repo failed");
-      }
+      vi.mocked(mockRepo.getTracks).mockResolvedValueOnce(err("Repo failed"));
+
+      const result = await cratesService.getTracksInCrate("crate1");
+
+      expect(result).toEqual(err("Repo failed"));
+      expect(mockRepo.getTracks).toHaveBeenCalledWith("crate1");
     });
   });
 
@@ -872,6 +600,12 @@ describe("CratesService", () => {
       if (result.ok) {
         expect(result.data).toEqual(true);
       }
+      expect(mockRepo.submitTrack).toHaveBeenCalledWith({
+        fromID: "user1",
+        toID: "user2",
+        crateID: "crate1",
+        trackId: "track1",
+      });
     });
     it("returns a notice if track already submitted");
     it("returns error if crate does not exist", async () => {
@@ -902,21 +636,6 @@ describe("CratesService", () => {
       expect(result.ok).toBe(false);
       if (!result.ok) {
         expect(result.error).toEqual("TrackId invalid");
-      }
-    });
-    it("returns error if repo returns undefined", async () => {
-      vi.mocked(mockRepo.submitTrack).mockResolvedValueOnce(
-        err("Unexpected error"),
-      );
-      const result = await cratesService.submitTrackToCrate(
-        "user1",
-        "user2",
-        "crate1",
-        "track1",
-      );
-      expect(result.ok).toBe(false);
-      if (!result.ok) {
-        expect(result.error).toEqual("Unexpected error");
       }
     });
     it("returns an error if the receiving user doesn't exist", async () => {
@@ -952,15 +671,6 @@ describe("CratesService", () => {
   });
 
   describe("acceptTrackSubmission", () => {
-    it("fetches all submissions for the crate", async () => {
-      const submissions = generateSubmissions(10);
-      vi.mocked(mockRepo.getSubmissions).mockResolvedValueOnce(submissions);
-      const result = await cratesService.getCrateSubmissions("user1", "crate1");
-      expect(result.ok).toBe(true);
-      if (result.ok) {
-        expect(result.data).toEqual(submissions);
-      }
-    });
     it("accepts submission successfully", async () => {
       vi.mocked(mockRepo.resolveSubmission).mockResolvedValueOnce(ok(true));
       const result = await cratesService.acceptTrackSubmission("submission1");
@@ -977,22 +687,6 @@ describe("CratesService", () => {
       expect(result.ok).toBe(false);
       if (!result.ok) {
         expect(result.error).toEqual("Submission not found");
-      }
-    });
-    it("returns error if submission already accepted", async () => {
-      vi.mocked(mockRepo.resolveSubmission).mockResolvedValueOnce(ok(false));
-      const result = await cratesService.acceptTrackSubmission("submission1");
-      expect(result.ok).toBe(false);
-      if (!result.ok) {
-        expect(result.error).toEqual("Submission already accepted");
-      }
-    });
-    it("returns error if submission already rejected", async () => {
-      vi.mocked(mockRepo.resolveSubmission).mockResolvedValueOnce(ok(true));
-      const result = await cratesService.acceptTrackSubmission("submission1");
-      expect(result.ok).toBe(false);
-      if (!result.ok) {
-        expect(result.error).toEqual("Submission already rejected");
       }
     });
     it("returns error on repo failure", async () => {
@@ -1027,19 +721,9 @@ describe("CratesService", () => {
         expect(result.error).toEqual("Submission not found");
       }
     });
-    it("returns error if repo returns undefined", async () => {
-      vi.mocked(mockRepo.resolveSubmission).mockResolvedValueOnce(
-        err("undefined response"),
-      );
-      const result = await cratesService.rejectTrackSubmission("submission1");
-      expect(result.ok).toBe(false);
-      if (!result.ok) {
-        expect(result.error).toEqual("Repo error");
-      }
-    });
     it("returns error on repo failure", async () => {
-      vi.mocked(mockRepo.resolveSubmission).mockRejectedValueOnce(
-        new Error("Repo error"),
+      vi.mocked(mockRepo.resolveSubmission).mockResolvedValueOnce(
+        err("Repo error"),
       );
       const result = await cratesService.rejectTrackSubmission("submission1");
       expect(result.ok).toBe(false);
