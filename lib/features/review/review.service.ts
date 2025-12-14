@@ -1,4 +1,4 @@
-import { Result, ok, err} from "@/lib/utils"; 
+import { Result, ok, err } from "@/lib/utils";
 import { Review, ReviewCreateDTO, ReviewUpdateDTO } from "./types";
 import { ReviewRepo } from "./review.repo";
 
@@ -11,28 +11,51 @@ export interface Sorting {
   pageSize?: number;
 }
 export interface ReviewService {
-  createReview(review: ReviewCreateDTO ): Promise<Result<Review, string>>;
+  createReview(review: ReviewCreateDTO): Promise<Result<Review, string>>;
 
   getReviewById(reviewId: string): Promise<Result<Review, string>>;
 
-  updateReview(userID: string ,review: ReviewUpdateDTO
+  updateReview(
+    userID: string,
+    review: ReviewUpdateDTO,
   ): Promise<Result<Review, string>>;
 
-  deleteReview(userId: string, reviewId: string): Promise<Result<boolean, string>>;
+  deleteReview(
+    userId: string,
+    reviewId: string,
+  ): Promise<Result<boolean, string>>;
 
-  likeReview(reviewId: string, userId: string): Promise<Result<boolean| string, string>>;
-  unlikeReview(reviewId: string, userId: string): Promise<Result<boolean | string, string>>;
+  likeReview(
+    reviewId: string,
+    userId: string,
+  ): Promise<Result<boolean | string, string>>;
+  unlikeReview(
+    reviewId: string,
+    userId: string,
+  ): Promise<Result<boolean | string, string>>;
 
-  getArtistReviews(artistId: string, sort:Sorting): Promise<Result<Review[], string>>;
-  getAlbumReviews(albumId: string, sort:Sorting): Promise<Result<Review[], string>>;
-  getTrackReviews(trackId: string, sort:Sorting): Promise<Result<Review[], string>>;
+  getArtistReviews(
+    artistId: string,
+    sort: Sorting,
+  ): Promise<Result<Review[], string>>;
+  getAlbumReviews(
+    albumId: string,
+    sort: Sorting,
+  ): Promise<Result<Review[], string>>;
+  getTrackReviews(
+    trackId: string,
+    sort: Sorting,
+  ): Promise<Result<Review[], string>>;
 }
-
-
 
 export function createReviewService(repo: ReviewRepo): ReviewService {
   return {
-    async createReview({ userId, itemId, rating, reviewText }: ReviewCreateDTO) {
+    async createReview({
+      userId,
+      itemId,
+      rating,
+      reviewText,
+    }: ReviewCreateDTO) {
       if (!userId || !itemId) {
         return err("Invalid userId or itemId");
       }
@@ -40,7 +63,7 @@ export function createReviewService(repo: ReviewRepo): ReviewService {
         return err("Rating must be between 1 and 5");
       }
       const saveResult = await repo.create(userId, itemId, rating, reviewText);
-      if(!saveResult.ok){
+      if (!saveResult.ok) {
         return err("Failed to create review");
       }
       return ok(saveResult.data);
@@ -57,14 +80,22 @@ export function createReviewService(repo: ReviewRepo): ReviewService {
       return ok(review);
     },
 
-    async updateReview(userId, { reviewId, rating, reviewText }: ReviewUpdateDTO) {
+    async updateReview(
+      userId,
+      { reviewId, rating, reviewText }: ReviewUpdateDTO,
+    ) {
       if (!reviewId) {
         return err("Invalid reviewId");
       }
       if (rating !== undefined && (rating < 1 || rating > 5)) {
         return err("Rating must be between 1 and 5");
       }
-      const updatedReview = await repo.update(userId, reviewId, rating, reviewText);
+      const updatedReview = await repo.update(
+        userId,
+        reviewId,
+        rating,
+        reviewText,
+      );
       if (!updatedReview) {
         return err("Failed to update review");
       }
