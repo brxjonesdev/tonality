@@ -32,7 +32,10 @@ describe("ReviewService", () => {
     order: "desc",
   };
 
-  const generateReviews = (count: number, type: "album" | "track") => {
+  const generateReviews = (
+    count: number,
+    type: "album" | "track",
+  ): Review[] => {
     const reviews: Review[] = [];
     for (let i = 0; i < count; i++) {
       reviews.push({
@@ -47,6 +50,7 @@ describe("ReviewService", () => {
         type,
       });
     }
+    return reviews;
   };
 
   beforeEach(() => {
@@ -374,11 +378,158 @@ describe("ReviewService", () => {
   });
 
   describe("getting review relating to an artistID", async () => {
-    it("returns reviews for a given artistID", async () =>
-    })
-  })
+    it("returns reviews for a given artistID", async () => {
+      const artistReviews = generateReviews(5, "album");
+      vi.mocked(mockRepo.getArtistReviews).mockResolvedValue(ok(artistReviews));
+      const result = await reviewService.getArtistReviews(
+        "artist1",
+        defaultSort,
+      );
+      expect(result.ok).toBe(true);
+      if (result.ok) {
+        expect(result.data).toEqual(artistReviews);
+      }
+      expect(mockRepo.getArtistReviews).toHaveBeenCalledWith("artist1");
+    });
+
+    it("handles repo errors", async () => {
+      vi.mocked(mockRepo.getArtistReviews).mockResolvedValue(
+        err("Database Error: couldn't fetch reviews"),
+      );
+      const result = await reviewService.getArtistReviews(
+        "artist1",
+        defaultSort,
+      );
+      expect(result.ok).toBe(false);
+      if (!result.ok) {
+        expect(result.error).toBe("No reviews found for artist");
+      }
+      expect(mockRepo.getArtistReviews).toHaveBeenCalledWith("artist1");
+    });
+
+    it("returns reviews in sort order", async () => {
+      const artistReviews = generateReviews(5, "album");
+      vi.mocked(mockRepo.getArtistReviews).mockResolvedValue(ok(artistReviews));
+      const result = await reviewService.getArtistReviews("artist1", {
+        sortBy: "rating",
+        order: "asc",
+      });
+      expect(result.ok).toBe(true);
+      if (result.ok) {
+        const sorted = [...artistReviews].sort((a, b) => a.rating - b.rating);
+        expect(result.data).toEqual(sorted);
+      }
+      expect(mockRepo.getArtistReviews).toHaveBeenCalledWith("artist1");
+    });
+
+    it("fails if the artistID is empty or invalid", async () => {
+      vi.mocked(mockRepo.getArtistReviews).mockResolvedValue(
+        err("ArtistID is invalid or empty"),
+      );
+      const result = await reviewService.getArtistReviews("", defaultSort);
+      expect(result.ok).toBe(false);
+      if (!result.ok) {
+        expect(result.error).toBe("ArtistID is invalid or empty");
+      }
+      expect(mockRepo.getArtistReviews).not.toHaveBeenCalled();
+    });
+  });
+
   describe("getting review relating to an albumID", async () => {
     it("returns reviews for a given albumID", async () => {
-  })
-  describe("getting review relating to a trackID", async () => {})
+      const albumReviews = generateReviews(5, "album");
+      vi.mocked(mockRepo.getAlbumReviews).mockResolvedValue(ok(albumReviews));
+      const result = await reviewService.getAlbumReviews("album1", defaultSort);
+      expect(result.ok).toBe(true);
+      if (result.ok) {
+        expect(result.data).toEqual(albumReviews);
+      }
+      expect(mockRepo.getAlbumReviews).toHaveBeenCalledWith("album1");
+    });
+    it("handles repo errors", async () => {
+      vi.mocked(mockRepo.getAlbumReviews).mockResolvedValue(
+        err("Database Error: couldn't fetch reviews"),
+      );
+      const result = await reviewService.getAlbumReviews("album1", defaultSort);
+      expect(result.ok).toBe(false);
+      if (!result.ok) {
+        expect(result.error).toBe("Database Error: couldn't fetch reviews");
+      }
+      expect(mockRepo.getAlbumReviews).toHaveBeenCalledWith("album1");
+    });
+    it("returns reviews in sort order", async () => {
+      const albumReviews = generateReviews(5, "album");
+      vi.mocked(mockRepo.getAlbumReviews).mockResolvedValue(ok(albumReviews));
+      const result = await reviewService.getAlbumReviews("album1", {
+        sortBy: "rating",
+        order: "asc",
+      });
+      expect(result.ok).toBe(true);
+      if (result.ok) {
+        const sorted = [...albumReviews].sort((a, b) => a.rating - b.rating);
+        expect(result.data).toEqual(sorted);
+      }
+      expect(mockRepo.getAlbumReviews).toHaveBeenCalledWith("album1");
+    });
+    it("fails if the albumID is empty or invalid", async () => {
+      vi.mocked(mockRepo.getAlbumReviews).mockResolvedValue(
+        err("AlbumID is invalid or empty"),
+      );
+      const result = await reviewService.getAlbumReviews("", defaultSort);
+      expect(result.ok).toBe(false);
+      if (!result.ok) {
+        expect(result.error).toBe("AlbumID is invalid or empty");
+      }
+      expect(mockRepo.getAlbumReviews).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("getting review relating to a trackID", async () => {
+    it("returns reviews for a given trackID", async () => {
+      const trackReviews = generateReviews(5, "track");
+      vi.mocked(mockRepo.getTrackReviews).mockResolvedValue(ok(trackReviews));
+      const result = await reviewService.getTrackReviews("track1", defaultSort);
+      expect(result.ok).toBe(true);
+      if (result.ok) {
+        expect(result.data).toEqual(trackReviews);
+      }
+      expect(mockRepo.getTrackReviews).toHaveBeenCalledWith("track1");
+    });
+    it("handles repo errors", async () => {
+      vi.mocked(mockRepo.getTrackReviews).mockResolvedValue(
+        err("Database Error: couldn't fetch reviews"),
+      );
+      const result = await reviewService.getTrackReviews("track1", defaultSort);
+      expect(result.ok).toBe(false);
+      if (!result.ok) {
+        expect(result.error).toBe("No reviews found for track");
+      }
+      expect(mockRepo.getTrackReviews).toHaveBeenCalledWith("track1");
+    });
+    it("returns reviews in sort order", async () => {
+      const trackReviews = generateReviews(5, "track");
+      vi.mocked(mockRepo.getTrackReviews).mockResolvedValue(ok(trackReviews));
+      const result = await reviewService.getTrackReviews("track1", {
+        sortBy: "rating",
+        order: "asc",
+      });
+      expect(result.ok).toBe(true);
+      if (result.ok) {
+        const sorted = [...trackReviews].sort((a, b) => a.rating - b.rating);
+        expect(result.data).toEqual(sorted);
+      }
+      expect(mockRepo.getTrackReviews).toHaveBeenCalledWith("track1");
+    });
+    it("fails if the trackID is empty or invalid", async () => {
+      vi.mocked(mockRepo.getTrackReviews).mockResolvedValue(
+        err("TrackID is invalid or empty"),
+      );
+      const result = await reviewService.getTrackReviews("", defaultSort);
+      expect(result.ok).toBe(false);
+      if (!result.ok) {
+        expect(result.error).toBe("TrackID is invalid or empty");
+      }
+      expect(mockRepo.getTrackReviews).not.toHaveBeenCalled();
+    });
+  });
 });
