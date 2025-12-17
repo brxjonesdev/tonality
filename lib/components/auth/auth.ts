@@ -1,5 +1,5 @@
-import { betterAuth } from "better-auth";
-import { Pool } from "@neondatabase/serverless";
+import { betterAuth } from 'better-auth';
+import { Pool } from '@neondatabase/serverless';
 
 export const auth = betterAuth({
   database: new Pool({
@@ -13,9 +13,9 @@ export const auth = betterAuth({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
       // Remove or simplify these to reduce token size
-      // accessType: "offline", 
+      // accessType: "offline",
       // prompt: "select_account consent",
-    }
+    },
   },
   // Add this to reduce cookie/header size
   session: {

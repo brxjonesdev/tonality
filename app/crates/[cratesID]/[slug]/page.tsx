@@ -1,7 +1,5 @@
-import React from 'react'
+import React from 'react';
 
 export default function CratesPage() {
-  return (
-    <div>CratesPage</div>
-  )
+  return <div>CratesPage</div>;
 }

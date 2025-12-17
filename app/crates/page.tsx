@@ -1,8 +1,8 @@
-import { cratesService } from "@/lib/features/crates/index";
-import React from "react";
+import { cratesService } from '@/lib/features/crates/index';
+import React from 'react';
 
 export default async function CratesHome() {
-  const userID = "braxtonid";
+  const userID = 'braxtonid';
   const [popularCrates, newCrates, userCrates, randomUserCrates] =
     await Promise.all([
       cratesService.getPopularCrates(),
