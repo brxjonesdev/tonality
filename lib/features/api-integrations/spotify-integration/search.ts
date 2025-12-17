@@ -1,11 +1,11 @@
-import { SpotifyError, SpotifySearchType } from "./config";
-import { SearchResponse } from "./types/search";
-import { getSpotifyToken } from "./utils";
-import { Result, ok, err } from "@/lib/utils";
+import { SpotifyError, SpotifySearchType } from './config';
+import { SearchResponse } from './types/search';
+import { getSpotifyToken } from './utils';
+import { Result, ok, err } from '@/lib/utils';
 
 export async function spotifySearch(
   query: string,
-  type: SpotifySearchType = "album"
+  type: SpotifySearchType = 'album'
 ): Promise<Result<SearchResponse, SpotifyError>> {
   const token = await getSpotifyToken();
 
@@ -22,5 +22,5 @@ export async function spotifySearch(
   }
 
   const data: SearchResponse = await res.json();
-  return ok(data[(type + "s") as keyof SearchResponse]);
+  return ok(data[(type + 's') as keyof SearchResponse]);
 }

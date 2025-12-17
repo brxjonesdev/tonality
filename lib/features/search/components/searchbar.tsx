@@ -1,37 +1,36 @@
-"use client";
-import { useId, useState } from "react";
-import { Input } from "@/lib/components/shared/input";
-import { Label } from "@/lib/components/shared/label";
+'use client';
+import { useId, useState } from 'react';
+import { Input } from '@/lib/components/shared/input';
+import { Label } from '@/lib/components/shared/label';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/lib/components/shared/select";
-import { getSongTitle} from "./placeholders";
-import ResultItem from "./searchresult";
-import { useDebounce } from "@/lib/shared/hooks/useDebounce";
-import { useQuery } from "@tanstack/react-query";
-import { Button } from "@/lib/components/shared/button";
+} from '@/lib/components/shared/select';
+import { getSongTitle } from './placeholders';
+import ResultItem from './searchresult';
+import { useDebounce } from '@/lib/shared/hooks/useDebounce';
+import { useQuery } from '@tanstack/react-query';
+import { Button } from '@/lib/components/shared/button';
 import {
   Empty,
   EmptyDescription,
   EmptyHeader,
   EmptyTitle,
-} from "@/lib/components/shared/empty";
+} from '@/lib/components/shared/empty';
 
-import { ScrollArea } from "@/lib/components/shared/scroll-area";
-import { spotifySearch } from "../../api-integrations/spotify-integration/search";
-import { formatSpotifyResults } from "../../api-integrations/spotify-integration/formatting";
-
+import { ScrollArea } from '@/lib/components/shared/scroll-area';
+import { spotifySearch } from '../../api-integrations/spotify-integration/search';
+import { formatSpotifyResults } from '../../api-integrations/spotify-integration/formatting';
 
 export default function SearchBar() {
   const id = useId();
-  const [searchMode, setSearchMode] = useState<"album" | "artist" | "track">(
-    "track"
+  const [searchMode, setSearchMode] = useState<'album' | 'artist' | 'track'>(
+    'track'
   );
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
   const {
@@ -39,17 +38,17 @@ export default function SearchBar() {
     isLoading,
     isError,
   } = useQuery({
-    queryKey: ["search", debouncedSearchQuery, searchMode],
+    queryKey: ['search', debouncedSearchQuery, searchMode],
     queryFn: async () => {
       if (!debouncedSearchQuery) return [];
       const response = await spotifySearch(debouncedSearchQuery, searchMode);
 
       if (!response.ok) {
-        throw new Error("Spotify Search Error");
+        throw new Error('Spotify Search Error');
       }
 
       const results = formatSpotifyResults(response.data, searchMode);
-      console.log("Formatted Results:", results);
+      console.log('Formatted Results:', results);
       return results;
     },
     enabled: debouncedSearchQuery.length > 0,
@@ -61,8 +60,8 @@ export default function SearchBar() {
       <div className="flex rounded-md shadow-xs ">
         <Select
           defaultValue="track"
-          onValueChange={(value) =>
-            setSearchMode(value as "album" | "artist" | "track")
+          onValueChange={value =>
+            setSearchMode(value as 'album' | 'artist' | 'track')
           }
         >
           <SelectTrigger
@@ -92,7 +91,7 @@ export default function SearchBar() {
             placeholder={getSongTitle()}
             className="rounded-l-none shadow-none pr-10" // space for button
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={e => setSearchQuery(e.target.value)}
             suppressHydrationWarning
           />
 
@@ -101,7 +100,7 @@ export default function SearchBar() {
               variant="ghost"
               size="icon"
               className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 p-0"
-              onClick={() => setSearchQuery("")}
+              onClick={() => setSearchQuery('')}
             >
               ✕
             </Button>
@@ -139,7 +138,7 @@ export default function SearchBar() {
         {!isLoading && results.length > 0 && (
           <ScrollArea className="h-72 w-full rounded-md border shadow-xl bg-cyan-200/10 border-cyan-300/20">
             <div className="animate-in fade-in-50 duration-300">
-              {results.map((item) => (
+              {results.map(item => (
                 <ResultItem key={item.id} {...item} />
               ))}
             </div>

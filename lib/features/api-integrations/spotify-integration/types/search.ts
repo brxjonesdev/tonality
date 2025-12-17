@@ -1,6 +1,6 @@
-import { AlbumSearchResults } from "./album";
-import { ArtistSearchResults } from "./artist";
-import { TrackSearchResults } from "./track";
+import { AlbumSearchResults } from './album';
+import { ArtistSearchResults } from './artist';
+import { TrackSearchResults } from './track';
 
 export interface AlbumSearchResponse {
   albums: AlbumSearchResults;

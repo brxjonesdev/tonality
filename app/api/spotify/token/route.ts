@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { NextResponse } from "next/server";
+import { NextResponse } from 'next/server';
 
 let cachedToken: string | null = null;
 let cachedExpiry = 0;
@@ -15,7 +15,7 @@ export async function GET() {
   }
   if (refreshing) {
     while (refreshing) {
-      await new Promise((res) => setTimeout(res, 30));
+      await new Promise(res => setTimeout(res, 30));
     }
     if (cachedToken) {
       return NextResponse.json({
@@ -31,16 +31,18 @@ export async function GET() {
   try {
     const clientId = process.env.SPOTIFY_CLIENT_ID!;
     const clientSecret = process.env.SPOTIFY_CLIENT_SECRET!;
-    const authToken = Buffer.from(`${clientId}:${clientSecret}`).toString("base64");
+    const authToken = Buffer.from(`${clientId}:${clientSecret}`).toString(
+      'base64'
+    );
 
-    const res = await fetch("https://accounts.spotify.com/api/token", {
-      method: "POST",
+    const res = await fetch('https://accounts.spotify.com/api/token', {
+      method: 'POST',
       headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
+        'Content-Type': 'application/x-www-form-urlencoded',
         Authorization: `Basic ${authToken}`,
       },
       body: new URLSearchParams({
-        grant_type: "client_credentials",
+        grant_type: 'client_credentials',
       }),
     });
 
