@@ -17,10 +17,7 @@ export interface CratesRepo {
     status: "accepted" | "rejected",
   ): Promise<Result<boolean, string>>;
   create(crateData: Crate): Promise<Result<Crate, string>>;
-  update(
-    crateId: string,
-    updates: Partial<Crate>,
-  ): Promise<Result<Crate, string>>;
+  update(updatedCrate: Crate): Promise<Result<Crate, string>>;
   delete(crateId: string): Promise<Result<boolean, string>>;
   addTrack(crateId: string, trackId: string): Promise<Result<boolean, string>>;
   removeTrack(

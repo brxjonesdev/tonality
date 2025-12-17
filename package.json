@@ -10,7 +10,8 @@
     "lint": "eslint",
     "auth:generate": "dotenv -e .env -- npx @better-auth/cli generate",
     "auth:migrate": "dotenv -e .env -- npx @better-auth/cli migrate",
-    "vitest:ui": "vitest --ui"
+    "vitest:ui": "vitest --ui",
+    "vitest:watch": "vitest watch"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

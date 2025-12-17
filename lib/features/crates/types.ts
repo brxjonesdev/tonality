@@ -1,13 +1,14 @@
 export type Crate = {
-    id: string;
-    name: string;
-    description: string;
-    coverImage?: string;
-    tags: string[];
-    creatorId: string;
-    createdAt: Date;
-    updatedAt: Date;
-}
+  id: string;
+  name: string;
+  description: string;
+  coverImage?: string;
+  tags: string[];
+  creatorId: string;
+  isPublic: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+};
 
 export interface CreateCrateDTO {
   name: string;
@@ -24,32 +25,32 @@ export interface UpdateCrateDTO {
 }
 
 export type CreateCrate = {
-    name: string;
-    description: string;
-    isPublic: boolean;
-}
+  name: string;
+  description: string;
+  isPublic: boolean;
+};
 
 export type CrateSubmission = {
-    id: string;
-    fromID: string;
-    toID: string;
-    trackId: string;
-    crateID: string;
-    status: "pending" | "accepted" | "rejected";
-    createdAt: Date;
-    updatedAt: Date;
-    message?: string;
-}
+  id: string;
+  fromID: string;
+  toID: string;
+  trackId: string;
+  crateID: string;
+  status: "pending" | "accepted" | "rejected";
+  createdAt: Date;
+  updatedAt: Date;
+  message?: string;
+};
 
 export type CrateCollaborator = {
-    id: string;
-    userId: string;
-    crateId: string;
-}
+  id: string;
+  userId: string;
+  crateId: string;
+};
 
 export type CrateTrack = {
-    id: string;
-    crateId: string;
-    trackId: string;
-    order: number;
-}
+  id: string;
+  crateId: string;
+  trackId: string;
+  order: number;
+};
