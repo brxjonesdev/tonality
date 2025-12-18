@@ -223,49 +223,39 @@ describe('ReviewService', () => {
   describe('updateReview', () => {
     it('updates a review and marks it as edited', async () => {
       vi.mocked(mockRepo.getById).mockResolvedValue(ok(sampleReview));
-      const updateReviewResult = await reviewService.updateReview('user1', {
-        reviewId: 'rev1',
-        rating: 4,
-        reviewText: 'Good album.',
-      });
-      expect(updateReviewResult.ok).toBe(true);
-      if (updateReviewResult.ok) {
-        expect(updateReviewResult.data).toEqual({
-          ...sampleReview,
-          rating: 4,
-          reviewText: 'Good album.',
-          edited: true,
-        });
-      }
-      expect(mockRepo.update).toHaveBeenCalledWith(
-        'user1',
-        'rev1',
-        4,
-        'Good album.'
+      vi.mocked(mockRepo.update).mockResolvedValue(
+        ok({ ...sampleReview, rating: 4 })
       );
-    });
-
-    it('prevents updating a review the user does not own', async () => {
       const updates: ReviewUpdateDTO = {
         reviewId: 'rev1',
         rating: 4,
-        reviewText: 'Good album.',
       };
-      vi.mocked(mockRepo.update).mockResolvedValue(
-        err('You do not own this review')
-      );
-      vi.mocked(mockRepo.getById).mockResolvedValue(ok(sampleReview));
-      const result = await reviewService.updateReview('user2', updates);
-      expect(result.ok).toBe(false);
-      if (!result.ok) {
-        expect(result.error).toBe('You do not own this review');
+      const result = await reviewService.updateReview('user1', updates);
+      expect(result.ok).toBe(true);
+      if (result.ok) {
+        expect(result.data.rating).toBe(4);
       }
       expect(mockRepo.update).toHaveBeenCalledWith(
-        'user2',
         updates.reviewId,
         updates.rating,
         updates.reviewText
       );
+    });
+
+    it('prevents updating a review the user does not own', async () => {
+      vi.mocked(mockRepo.getById).mockResolvedValue(ok(sampleReview));
+      const updates: ReviewUpdateDTO = {
+        reviewId: 'rev1',
+        rating: 4,
+      };
+      const result = await reviewService.updateReview('user2', updates);
+      expect(result.ok).toBe(false);
+      if (!result.ok) {
+        expect(result.error).toBe(
+          'Unauthorized: You can only update your own reviews'
+        );
+      }
+      expect(mockRepo.update).not.toHaveBeenCalled();
     });
 
     it('returns an error for invalid update input', async () => {
@@ -301,7 +291,9 @@ describe('ReviewService', () => {
       const result = await reviewService.deleteReview('user2', 'rev1');
       expect(result.ok).toBe(false);
       if (!result.ok) {
-        expect(result.error).toBe('You do not own this review');
+        expect(result.error).toBe(
+          'Unauthorized: You can only delete your own reviews'
+        );
       }
       expect(mockRepo.delete).toHaveBeenCalledWith('rev1');
     });

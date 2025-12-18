@@ -1,3 +1,3 @@
-import { createReviewService } from "./review.service";
+import { createReviewService } from './review.service';
 
 export const reviewService = createReviewService(null);

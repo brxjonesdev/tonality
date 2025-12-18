@@ -203,7 +203,7 @@ export function createReviewService(repo: ReviewRepo): ReviewService {
 
     async getTrackReviews(trackId, sort) {
       if (!trackId) {
-        return err('Invalid trackId');
+        return err('TrackID is invalid or empty');
       }
       const trackReviewsResult = await repo.getTrackReviews(trackId, sort);
       if (!trackReviewsResult.ok) {

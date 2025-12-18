@@ -1,9 +1,9 @@
-import React from 'react'
+import React from 'react';
 
-export default function HomeLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <main>
-        {children}
-    </main>
-  )
+export default function HomeLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return <main>{children}</main>;
 }

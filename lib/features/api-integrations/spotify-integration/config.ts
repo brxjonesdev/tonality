@@ -16,7 +16,4 @@ export interface SpotifyError {
   error: string;
 }
 
-export type SpotifySearchType =
-  | "album"
-  | "artist"
-  | "track";
+export type SpotifySearchType = 'album' | 'artist' | 'track';

@@ -1,6 +1,6 @@
-import { Album } from "./album";
-import { SimplifiedArtist } from "./artist";
-import { ExternalIds, ExternalUrls, PaginatedResults } from "./shared";
+import { Album } from './album';
+import { SimplifiedArtist } from './artist';
+import { ExternalIds, ExternalUrls, PaginatedResults } from './shared';
 
 export interface Track {
   album: Album;
@@ -19,7 +19,7 @@ export interface Track {
   popularity: number;
   preview_url: string | null;
   track_number: number;
-  type: "track";
+  type: 'track';
   uri: string;
 }
 
@@ -34,6 +34,6 @@ export type SimplifiedTrack = {
   uri: string;
   images?: { url: string; height: number; width: number }[];
   isrc?: string;
-}
+};
 
-export type TrackSearchResults = PaginatedResults<Track>
+export type TrackSearchResults = PaginatedResults<Track>;
