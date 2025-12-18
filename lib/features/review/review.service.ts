@@ -153,6 +153,13 @@ export function createReviewService(repo: ReviewRepo): ReviewService {
       if (!reviewId || !userId) {
         return err('Invalid reviewId or userId');
       }
+      const existingLikeResult = await repo.hasUserLiked(reviewId, userId);
+      if (!existingLikeResult.ok) {
+        return err('Failed to check existing likes');
+      }
+      if (existingLikeResult.data) {
+        return err('User has already liked this review');
+      }
       const thelikening = await repo.like(reviewId, userId);
       if (!thelikening.ok) {
         return err('Failed to like review');

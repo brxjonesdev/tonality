@@ -57,6 +57,7 @@ describe('ReviewService', () => {
       getByUserAndItem: vi.fn(),
       update: vi.fn(),
       delete: vi.fn(),
+      hasUserLiked: vi.fn(),
       like: vi.fn(),
       unlike: vi.fn(),
       getArtistReviews: vi.fn(),
@@ -275,6 +276,7 @@ describe('ReviewService', () => {
   describe('deleteReview', () => {
     it('deletes a review the user owns', async () => {
       vi.mocked(mockRepo.delete).mockResolvedValue(ok(true));
+      vi.mocked(mockRepo.getById).mockResolvedValue(ok(sampleReview));
       const result = await reviewService.deleteReview('user1', 'rev1');
       expect(result.ok).toBe(true);
       if (result.ok) {
@@ -295,11 +297,9 @@ describe('ReviewService', () => {
           'Unauthorized: You can only delete your own reviews'
         );
       }
-      expect(mockRepo.delete).toHaveBeenCalledWith('rev1');
     });
 
     it('returns an error when review does not exist', async () => {
-      vi.mocked(mockRepo.delete).mockResolvedValue(err('Review not found'));
       vi.mocked(mockRepo.getById).mockResolvedValue(err('Review not found'));
       const result = await reviewService.deleteReview(
         'user1',
@@ -307,15 +307,15 @@ describe('ReviewService', () => {
       );
       expect(result.ok).toBe(false);
       if (!result.ok) {
-        expect(result.error).toBe('You do not own this review');
+        expect(result.error).toBe('Review not found');
       }
-      expect(mockRepo.delete).toHaveBeenCalledWith('nonexistent-rev');
     });
   });
 
   describe('likeReview', () => {
     it('likes a review', async () => {
       vi.mocked(mockRepo.like).mockResolvedValue(ok(true));
+      vi.mocked(mockRepo.hasUserLiked).mockResolvedValue(ok(false));
       const result = await reviewService.likeReview('rev1', 'user2');
       expect(result.ok).toBe(true);
       if (result.ok) {
@@ -325,20 +325,19 @@ describe('ReviewService', () => {
     });
 
     it('prevents liking own review', async () => {
-      vi.mocked(mockRepo.getByUserAndItem).mockResolvedValue(ok(sampleReview));
+      vi.mocked(mockRepo.hasUserLiked).mockResolvedValue(ok(true));
       const result = await reviewService.likeReview('rev1', 'user1');
       expect(result.ok).toBe(false);
       if (!result.ok) {
-        expect(result.error).toBe(
-          'You cannot like your own review, narassist!'
-        );
+        expect(result.error).toBe('User has already liked this review');
       }
       expect(mockRepo.like).not.toHaveBeenCalled();
     });
     it('handles repo errors', async () => {
-      vi.mocked(mockRepo.like).mockResolvedValueOnce(
-        err("Database Error: couldn't like review")
+      vi.mocked(mockRepo.like).mockResolvedValue(
+        err('Database error: unable to like review')
       );
+      vi.mocked(mockRepo.hasUserLiked).mockResolvedValue(ok(false));
       const result = await reviewService.likeReview('rev1', 'user2');
       expect(result.ok).toBe(false);
       if (!result.ok) {

@@ -14,6 +14,10 @@ export interface ReviewRepo {
     reviewText?: string
   ): Promise<Result<Review, string>>;
   delete(reviewId: string): Promise<Result<boolean, string>>;
+  hasUserLiked(
+    reviewId: string,
+    userId: string
+  ): Promise<Result<boolean, string>>;
   like(
     reviewId: string,
     userId: string
