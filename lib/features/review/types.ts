@@ -15,24 +15,35 @@ export interface MediaRateReview {
 export interface Review {
   id: string;
   userId: string;
-  itemId: string; 
+  itemId: string;
+  artistID: string;
   rating: number;
   reviewText?: string;
   createdAt: string;
   updatedAt: string;
   edited: boolean;
-  type: "artist" | "album" | "track";
+  type: 'album' | 'track';
 }
 
 export interface ReviewCreateDTO {
-  userId: string;
   itemId: string;
+  artistID: string;
   rating: number;
   reviewText?: string;
+  type: 'album' | 'track';
 }
 
 export interface ReviewUpdateDTO {
   reviewId: string;
   rating?: number;
   reviewText?: string;
+}
+
+export interface Sorting {
+  sortBy: 'date' | 'rating';
+  order: 'asc' | 'desc';
+  filterBy?: 'albumId' | 'trackId';
+  filterValue?: string;
+  page?: number;
+  pageSize?: number;
 }
