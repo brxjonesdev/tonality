@@ -8,7 +8,7 @@ export interface Review {
   createdAt: string;
   updatedAt: string;
   edited: boolean;
-  type: 'album' | 'track';
+  type: "album" | "track";
 }
 
 export interface ReviewCreateDTO {
@@ -16,7 +16,7 @@ export interface ReviewCreateDTO {
   artistID: string;
   rating: number;
   reviewText?: string;
-  type: 'album' | 'track';
+  type: "album" | "track";
 }
 
 export interface ReviewUpdateDTO {
@@ -26,11 +26,10 @@ export interface ReviewUpdateDTO {
 }
 
 export interface Sorting {
-  sortBy: 'date' | 'rating';
-  order: 'asc' | 'desc';
-  filterBy?: 'albumId' | 'trackId';
+  sortBy: "date" | "rating";
+  order: "asc" | "desc";
+  filterBy?: "albumId" | "trackId";
   filterValue?: string;
   page: number;
   pageSize: number;
 }
->>>>>>> review-system

@@ -7,15 +7,7 @@ A social music app that lets you **review albums/tracks**, **organize them into 
 - Create themed "crates" (e.g., "90s Indie," "Lo-fi Essentials")  
 - Share your collections with the community  
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+*Showcase what you love—your music, your taste, your story.*  
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
