@@ -44,6 +44,6 @@ export interface Sorting {
   order: 'asc' | 'desc';
   filterBy?: 'albumId' | 'trackId';
   filterValue?: string;
-  page?: number;
-  pageSize?: number;
+  page: number;
+  pageSize: number;
 }

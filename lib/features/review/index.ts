@@ -1,3 +1,5 @@
+import { createNeonReviewRepo } from './repo-impls/review.repo.neon';
 import { createReviewService } from './review.service';
 
-export const reviewService = createReviewService(null);
+const neonImpl = createNeonReviewRepo();
+export const reviewService = createReviewService(neonImpl);
