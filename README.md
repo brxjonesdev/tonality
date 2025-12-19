@@ -7,6 +7,6 @@ A social music app that lets you **review albums/tracks**, **organize them into 
 - Create themed "crates" (e.g., "90s Indie," "Lo-fi Essentials")  
 - Share your collections with the community  
 
-*Showcase what you love—your music, your taste, your story.*  
+Showcase your music, your taste, your story.
 
 👉 [Get Started](https://tonality.braxtonjones.dev)
