@@ -1,8 +1,11 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Tonality
 
-## Getting Started
+A social music app that lets you **review albums/tracks**, **organize them into themed "crates"**, and **showcase your musical taste**.  
 
-First, run the development server:
+**Why Tonality?**  
+- Review music with ratings & comments  
+- Create themed "crates" (e.g., "90s Indie," "Lo-fi Essentials")  
+- Share your collections with the community  
 
 ```bash
 npm run dev
