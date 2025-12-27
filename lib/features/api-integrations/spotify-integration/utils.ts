@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { cache } from 'react';
-import { SpotifyError, SpotifyResponse } from './config';
-import { Result, err, ok } from '@/lib/utils';
+import { cache } from "react";
+import { SpotifyError, SpotifyResponse } from "./config";
+import { Result, err, ok } from "@/lib/utils";
 
 export const getSpotifyToken = cache(async () => {
   const base = process.env.NEXT_PUBLIC_BASE_URL!;
@@ -11,7 +11,7 @@ export const getSpotifyToken = cache(async () => {
   });
 
   const tokenData: SpotifyResponse | SpotifyError = await tokenRes.json();
-  if ('error' in tokenData) throw new Error(tokenData.error);
+  if ("error" in tokenData) throw new Error(tokenData.error);
 
   return tokenData.access_token;
 });
@@ -19,5 +19,5 @@ export const getSpotifyToken = cache(async () => {
 export const generateSlug = (name: string): string =>
   name
     .toLowerCase()
-    .replace(/\s+/g, '-')
-    .replace(/[^a-z0-9\-]/g, '');
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9\-]/g, "");

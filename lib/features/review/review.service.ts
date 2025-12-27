@@ -1,45 +1,45 @@
-import { Result, ok, err } from '@/lib/utils';
-import { Review, ReviewCreateDTO, ReviewUpdateDTO, Sorting } from './types';
-import { ReviewRepo } from './review.repo';
+import { Result, ok, err } from "@/lib/utils";
+import { Review, ReviewCreateDTO, ReviewUpdateDTO, Sorting } from "./types";
+import { ReviewRepo } from "./review.repo";
 
 export interface ReviewService {
   createReview(
     review: ReviewCreateDTO,
-    userID: string
+    userID: string,
   ): Promise<Result<Review, string>>;
 
   getReviewById(reviewId: string): Promise<Result<Review, string>>;
 
   updateReview(
     userID: string,
-    review: ReviewUpdateDTO
+    review: ReviewUpdateDTO,
   ): Promise<Result<Review, string>>;
 
   deleteReview(
     userId: string,
-    reviewId: string
+    reviewId: string,
   ): Promise<Result<boolean, string>>;
 
   likeReview(
     reviewId: string,
-    userId: string
+    userId: string,
   ): Promise<Result<boolean | string, string>>;
   unlikeReview(
     reviewId: string,
-    userId: string
+    userId: string,
   ): Promise<Result<boolean | string, string>>;
 
   getAllReviewsRelatedToArtist(
     artistID: string,
-    sort: Sorting
+    sort: Sorting,
   ): Promise<Result<Review[], string>>;
   getAlbumReviews(
     albumId: string,
-    sort: Sorting
+    sort: Sorting,
   ): Promise<Result<Review[], string>>;
   getTrackReviews(
     trackId: string,
-    sort: Sorting
+    sort: Sorting,
   ): Promise<Result<Review[], string>>;
 }
 
@@ -47,14 +47,14 @@ export function createReviewService(repo: ReviewRepo): ReviewService {
   return {
     async createReview(
       { itemId, rating, reviewText, type, artistID }: ReviewCreateDTO,
-      userId: string
+      userId: string,
     ) {
       if (rating < 1 || rating > 5) {
-        return err('Rating must be between 1 and 5');
+        return err("Rating must be between 1 and 5");
       }
 
       if (reviewText && reviewText.length > 1000) {
-        return err('Review text exceeds maximum length of 1000 characters');
+        return err("Review text exceeds maximum length of 1000 characters");
       }
 
       // check if there is already a review by this user for this item
@@ -63,11 +63,11 @@ export function createReviewService(repo: ReviewRepo): ReviewService {
         return err(duplicateCheckResult.error);
       }
       if (duplicateCheckResult.data) {
-        return err('User has already reviewed this item');
+        return err("User has already reviewed this item");
       }
-      const formattedText = reviewText ? reviewText.trim() : '';
+      const formattedText = reviewText ? reviewText.trim() : "";
       const newReview: Review = {
-        id: '',
+        id: "",
         userId,
         itemId,
         rating,
@@ -88,7 +88,7 @@ export function createReviewService(repo: ReviewRepo): ReviewService {
 
     async getReviewById(reviewId) {
       if (!reviewId) {
-        return err('Invalid reviewId');
+        return err("Invalid reviewId");
       }
       const reviewResult = await repo.getById(reviewId);
       if (!reviewResult.ok) {
@@ -99,13 +99,13 @@ export function createReviewService(repo: ReviewRepo): ReviewService {
 
     async updateReview(
       userId,
-      { reviewId, rating, reviewText }: ReviewUpdateDTO
+      { reviewId, rating, reviewText }: ReviewUpdateDTO,
     ) {
       if (!reviewId) {
-        return err('Invalid reviewId');
+        return err("Invalid reviewId");
       }
       if (rating !== undefined && (rating < 1 || rating > 5)) {
-        return err('Rating must be between 1 and 5');
+        return err("Rating must be between 1 and 5");
       }
 
       const existingReviewResult = await repo.getById(reviewId);
@@ -114,13 +114,13 @@ export function createReviewService(repo: ReviewRepo): ReviewService {
       }
       const existingReview = existingReviewResult.data;
       if (existingReview.userId !== userId) {
-        return err('Unauthorized: You can only update your own reviews');
+        return err("Unauthorized: You can only update your own reviews");
       }
 
       const updatedReviewResult = await repo.update(
         reviewId,
         rating,
-        reviewText
+        reviewText,
       );
       if (!updatedReviewResult.ok) {
         return err(updatedReviewResult.error);
@@ -130,7 +130,7 @@ export function createReviewService(repo: ReviewRepo): ReviewService {
 
     async deleteReview(userId, reviewId) {
       if (!reviewId) {
-        return err('Invalid reviewId');
+        return err("Invalid reviewId");
       }
 
       const existingReviewResult = await repo.getById(reviewId);
@@ -139,54 +139,54 @@ export function createReviewService(repo: ReviewRepo): ReviewService {
       }
       const existingReview = existingReviewResult.data;
       if (existingReview.userId !== userId) {
-        return err('Unauthorized: You can only delete your own reviews');
+        return err("Unauthorized: You can only delete your own reviews");
       }
 
       const deletedResult = await repo.delete(reviewId);
       if (!deletedResult.ok) {
-        return err('Failed to delete review');
+        return err("Failed to delete review");
       }
       return ok(deletedResult.data);
     },
 
     async likeReview(reviewId, userId) {
       if (!reviewId || !userId) {
-        return err('Invalid reviewId or userId');
+        return err("Invalid reviewId or userId");
       }
       const existingLikeResult = await repo.hasUserLiked(reviewId, userId);
       if (!existingLikeResult.ok) {
-        return err('Failed to check existing likes');
+        return err("Failed to check existing likes");
       }
       if (existingLikeResult.data) {
-        return err('User has already liked this review');
+        return err("User has already liked this review");
       }
       const thelikening = await repo.like(reviewId, userId);
       if (!thelikening.ok) {
-        return err('Failed to like review');
+        return err("Failed to like review");
       }
-      if (thelikening.data === 'Review does not exist') {
-        return err('Review does not exist');
+      if (thelikening.data === "Review does not exist") {
+        return err("Review does not exist");
       }
       return ok(true);
     },
 
     async unlikeReview(reviewId, userId) {
       if (!reviewId || !userId) {
-        return err('Invalid reviewId or userId');
+        return err("Invalid reviewId or userId");
       }
       const theunlikening = await repo.unlike(reviewId, userId);
       if (!theunlikening.ok) {
-        return err('Failed to unlike review');
+        return err("Failed to unlike review");
       }
-      if (theunlikening.data === 'Review does not exist') {
-        return err('Review does not exist');
+      if (theunlikening.data === "Review does not exist") {
+        return err("Review does not exist");
       }
       return ok(true);
     },
 
     async getAllReviewsRelatedToArtist(artistID, sort) {
       if (!artistID) {
-        return err('Invalid artistID');
+        return err("Invalid artistID");
       }
 
       const artistReviewsResult = await repo.getArtistReviews(artistID, sort);
@@ -199,7 +199,7 @@ export function createReviewService(repo: ReviewRepo): ReviewService {
 
     async getAlbumReviews(albumId, sort) {
       if (!albumId) {
-        return err('Invalid albumId');
+        return err("Invalid albumId");
       }
       const albumReviewsResult = await repo.getAlbumReviews(albumId, sort);
       if (!albumReviewsResult.ok) {
@@ -210,7 +210,7 @@ export function createReviewService(repo: ReviewRepo): ReviewService {
 
     async getTrackReviews(trackId, sort) {
       if (!trackId) {
-        return err('TrackID is invalid or empty');
+        return err("TrackID is invalid or empty");
       }
       const trackReviewsResult = await repo.getTrackReviews(trackId, sort);
       if (!trackReviewsResult.ok) {

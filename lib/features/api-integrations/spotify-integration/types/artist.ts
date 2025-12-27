@@ -1,11 +1,11 @@
-import { ExternalUrls, Followers, Image, PaginatedResults } from './shared';
+import { ExternalUrls, Followers, Image, PaginatedResults } from "./shared";
 
 export interface SimplifiedArtist {
   external_urls: ExternalUrls;
   href: string;
   id: string;
   name: string;
-  type: 'artist';
+  type: "artist";
   uri: string;
 }
 

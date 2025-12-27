@@ -1,6 +1,6 @@
-import { dirname } from 'path';
-import { fileURLToPath } from 'url';
-import { FlatCompat } from '@eslint/eslintrc';
+import { dirname } from "path";
+import { fileURLToPath } from "url";
+import { FlatCompat } from "@eslint/eslintrc";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -10,28 +10,28 @@ const compat = new FlatCompat({
 });
 
 const eslintConfig = [
-  ...compat.extends('next/core-web-vitals', 'next/typescript'),
+  ...compat.extends("next/core-web-vitals", "next/typescript"),
   {
     ignores: [
-      'node_modules/**',
-      '.next/**',
-      'out/**',
-      'build/**',
-      'next-env.d.ts',
+      "node_modules/**",
+      ".next/**",
+      "out/**",
+      "build/**",
+      "next-env.d.ts",
     ],
-    extends: ['eslint:recommended'],
+    extends: ["eslint:recommended"],
     rules: {
       // Prettier integration
-      'prettier/prettier': 'error',
+      "prettier/prettier": "error",
       // Additional Next.js rules
-      '@next/next/no-html-link-for-pages': 'off',
+      "@next/next/no-html-link-for-pages": "off",
     },
   },
   // Prettier configuration
   {
-    files: ['**/*.{js,jsx,ts,tsx,json,css,md}'],
+    files: ["**/*.{js,jsx,ts,tsx,json,css,md}"],
     rules: {
-      'prettier/prettier': 'error',
+      "prettier/prettier": "error",
     },
   },
 ];

@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
+import Link from "next/link";
 
 export interface ResultItemProps {
-  type: 'album' | 'artist' | 'track';
+  type: "album" | "artist" | "track";
   id: string;
   spotifyId: string;
   title: string;
@@ -16,14 +16,14 @@ export interface ResultItemProps {
 export default function ResultItem(item: ResultItemProps) {
   function generateLink(type: string, slug: string, id: string): string {
     switch (type) {
-      case 'album':
+      case "album":
         return `/album/${slug}/${id}`;
-      case 'artist':
+      case "artist":
         return `/artist/${slug}/${id}`;
-      case 'track':
+      case "track":
         return `/track/${slug}/${id}`;
       default:
-        return '/';
+        return "/";
     }
   }
 

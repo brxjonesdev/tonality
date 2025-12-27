@@ -1,8 +1,8 @@
-import { musicBrainzService } from '@/lib/features/api-integrations/music-brainz-integration/music-brainz-service';
-import { spotifyService } from '@/lib/features/api-integrations/spotify-integration/spotify.service';
-import { reviewService } from '@/lib/features/review';
-import { Metadata } from 'next';
-import React from 'react';
+import { musicBrainzService } from "@/lib/features/api-integrations/music-brainz-integration/music-brainz-service";
+import { spotifyService } from "@/lib/features/api-integrations/spotify-integration/spotify.service";
+import { reviewService } from "@/lib/features/review";
+import { Metadata } from "next";
+import React from "react";
 
 export async function generateMetadata({
   params,
@@ -16,15 +16,15 @@ export async function generateMetadata({
   if (!albumInfo.ok) {
     return {
       title: slug
-        .split('-')
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(' '),
+        .split("-")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" "),
       description: `Album details for ${slug}`,
     };
   }
 
   const info = albumInfo.data;
-  const artist = info.artist || 'Unknown Artist';
+  const artist = info.artist || "Unknown Artist";
   const title = `${info.name} by ${artist}`;
 
   return {
@@ -41,7 +41,12 @@ export default async function AlbumPage({
   const { id } = await params;
   const [albumInfo, ratings, tracklist, credits] = await Promise.all([
     spotifyService.getAlbumInfoByID(id),
-    reviewService.getAlbumReviews(id),
+    reviewService.getAlbumReviews(id, {
+      sortBy: "date",
+      order: "desc",
+      page: 1,
+      pageSize: 10,
+    }),
     spotifyService.getAlbumsTracks(id),
     musicBrainzService.getAlbumCredits(id),
   ]);

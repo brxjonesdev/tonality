@@ -1,9 +1,9 @@
-import { musicBrainzService } from '@/lib/features/api-integrations/music-brainz-integration/music-brainz-service';
-import { spotifyService } from '@/lib/features/api-integrations/spotify-integration/spotify.service';
-import { cratesService } from '@/lib/features/crates/crates-service';
-import { reviewService } from '@/lib/features/review';
-import { Metadata } from 'next';
-import React from 'react';
+import { musicBrainzService } from "@/lib/features/api-integrations/music-brainz-integration/music-brainz-service";
+import { spotifyService } from "@/lib/features/api-integrations/spotify-integration/spotify.service";
+import { cratesService } from "@/lib/features/crates/index";
+import { reviewService } from "@/lib/features/review/index";
+import { Metadata } from "next";
+import React from "react";
 
 export async function generateMetadata({
   params,
@@ -16,19 +16,19 @@ export async function generateMetadata({
   if (!trackInfo.ok) {
     return {
       title: slug
-        .split('-')
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(' '),
+        .split("-")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" "),
       description: `Track details for ${slug}`,
     };
   }
   const info = trackInfo.data;
-  const title = `${info.name} by ${info.artist || 'unknown artist'}`;
+  const title = `${info.name} by ${info.artist || "unknown artist"}`;
 
   return {
     title: title,
     description: info?.name
-      ? `Check out ${info.name} by ${info.artist || 'unknown artist'} on Tonality.`
+      ? `Check out ${info.name} by ${info.artist || "unknown artist"} on Tonality.`
       : `Track details for ${slug}`,
   };
 }
@@ -41,7 +41,12 @@ export default async function TrackPage({
   const { id } = await params;
   const [trackInfo, reviews, credits, crates] = await Promise.all([
     spotifyService.getTrackInfoByID(id),
-    reviewService.getTrackReviews(id),
+    reviewService.getTrackReviews(id, {
+      sortBy: "date",
+      order: "desc",
+      page: 1,
+      pageSize: 10,
+    }),
     musicBrainzService.getTrackCredits(id),
     cratesService.getCratesIncludingTrack(id),
   ]);

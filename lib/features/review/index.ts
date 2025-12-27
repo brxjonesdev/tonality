@@ -1,5 +1,5 @@
-import { createNeonReviewRepo } from './repo-impls/review.repo.neon';
-import { createReviewService } from './review.service';
+import { reviewSupabaseDbImpl } from "./repo-impls/review.supbase.db";
+import { createReviewService } from "./review.service";
 
-const neonImpl = createNeonReviewRepo();
-export const reviewService = createReviewService(neonImpl);
+const supabaseDB = reviewSupabaseDbImpl();
+export const reviewService = createReviewService(supabaseDB);

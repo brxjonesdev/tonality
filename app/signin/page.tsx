@@ -1,5 +1,5 @@
-import AuthButton from '@/lib/components/auth/components/auth-button';
-import React from 'react';
+import AuthButton from "@/lib/components/auth/components/auth-button";
+import React from "react";
 
 export default function SignInPage() {
   return (

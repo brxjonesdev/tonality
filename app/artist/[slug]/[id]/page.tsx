@@ -1,7 +1,7 @@
-import { spotifyService } from '@/lib/features/api-integrations/spotify-integration/spotify.service';
-import { reviewService } from '@/lib/features/review';
-import { Metadata } from 'next';
-import React from 'react';
+import { spotifyService } from "@/lib/features/api-integrations/spotify-integration/spotify.service";
+import { reviewService } from "@/lib/features/review";
+import { Metadata } from "next";
+import React from "react";
 
 export async function generateMetadata({
   params,
@@ -15,9 +15,9 @@ export async function generateMetadata({
   if (!artistInfo.ok) {
     return {
       title: slug
-        .split('-')
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(' '),
+        .split("-")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" "),
       description: `Artist details for ${slug}`,
     };
   }
@@ -41,7 +41,12 @@ export default async function ArtistPage({
     spotifyService.getArtistInfoByID(id),
     spotifyService.getArtistTopTracks(id),
     spotifyService.getArtistAlbums(id),
-    reviewService.getArtistReviews(id),
+    reviewService.getAllReviewsRelatedToArtist(id, {
+      sortBy: "date",
+      order: "desc",
+      page: 1,
+      pageSize: 10,
+    }),
   ]);
   return (
     <div className="flex gap-4 flex-col">

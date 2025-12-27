@@ -35,7 +35,7 @@ export type CrateSubmission = {
   fromID: string;
   trackId: string;
   crateID: string;
-  status: 'pending' | 'accepted' | 'rejected';
+  status: "pending" | "accepted" | "rejected";
   createdAt: Date;
   updatedAt: Date;
   message?: string;

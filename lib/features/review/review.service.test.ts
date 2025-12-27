@@ -1,36 +1,36 @@
-import { describe, it, beforeEach, afterEach, vi, expect } from 'vitest';
-import { ReviewService, createReviewService } from './review.service';
-import { ReviewRepo } from './review.repo';
-import { Review, ReviewCreateDTO, ReviewUpdateDTO, Sorting } from './types';
-import { ok, err } from '@/lib/utils';
+import { describe, it, beforeEach, afterEach, vi, expect } from "vitest";
+import { ReviewService, createReviewService } from "./review.service";
+import { ReviewRepo } from "./review.repo";
+import { Review, ReviewCreateDTO, ReviewUpdateDTO, Sorting } from "./types";
+import { ok, err } from "@/lib/utils";
 
-describe('ReviewService', () => {
+describe("ReviewService", () => {
   let reviewService: ReviewService;
   let mockRepo: ReviewRepo;
 
   const sampleReview: Review = {
-    id: 'rev1',
-    userId: 'user1',
-    itemId: 'item1',
+    id: "rev1",
+    userId: "user1",
+    itemId: "item1",
     rating: 5,
-    artistID: 'artist1',
-    reviewText: 'Great album!',
+    artistID: "artist1",
+    reviewText: "Great album!",
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     edited: false,
-    type: 'album',
+    type: "album",
   };
 
   const defaultSort: Sorting = {
-    sortBy: 'date',
-    order: 'desc',
+    sortBy: "date",
+    order: "desc",
     page: 1,
     pageSize: 10,
   };
 
   const generateReviews = (
     count: number,
-    type: 'album' | 'track'
+    type: "album" | "track",
   ): Review[] => {
     const reviews: Review[] = [];
     for (let i = 0; i < count; i++) {
@@ -71,28 +71,28 @@ describe('ReviewService', () => {
     vi.clearAllMocks();
   });
 
-  describe('createReview', () => {
-    it('creates a review with valid input', async () => {
+  describe("createReview", () => {
+    it("creates a review with valid input", async () => {
       vi.mocked(mockRepo.create).mockResolvedValue(ok(sampleReview));
       vi.mocked(mockRepo.getByUserAndItem).mockResolvedValue(ok(null));
       const reviewCreateInput: ReviewCreateDTO = {
-        itemId: 'item1',
+        itemId: "item1",
         rating: 5,
-        reviewText: 'Great album!',
-        artistID: 'artist1',
-        type: 'album',
+        reviewText: "Great album!",
+        artistID: "artist1",
+        type: "album",
       };
       const creationResult = await reviewService.createReview(
         reviewCreateInput,
-        'user1'
+        "user1",
       );
       expect(creationResult.ok).toBe(true);
       if (creationResult.ok) {
         expect(creationResult.data).toEqual(sampleReview);
       }
       expect(mockRepo.create).toHaveBeenCalledWith({
-        id: '',
-        userId: 'user1',
+        id: "",
+        userId: "user1",
         itemId: reviewCreateInput.itemId,
         rating: reviewCreateInput.rating,
         artistID: reviewCreateInput.artistID,
@@ -104,134 +104,134 @@ describe('ReviewService', () => {
       });
     });
 
-    it('prevents creating duplicate reviews for the same user and item', async () => {
+    it("prevents creating duplicate reviews for the same user and item", async () => {
       vi.mocked(mockRepo.getByUserAndItem).mockResolvedValue(ok(sampleReview));
       const duplicateReviewCreate: ReviewCreateDTO = {
-        itemId: 'item1',
+        itemId: "item1",
         rating: 5,
-        reviewText: 'Great album!',
-        artistID: 'artist1',
-        type: 'album',
+        reviewText: "Great album!",
+        artistID: "artist1",
+        type: "album",
       };
       const result = await reviewService.createReview(
         duplicateReviewCreate,
-        'user1'
+        "user1",
       );
       expect(result.ok).toBe(false);
       if (!result.ok) {
-        expect(result.error).toBe('User has already reviewed this item');
+        expect(result.error).toBe("User has already reviewed this item");
       }
       expect(mockRepo.create).not.toHaveBeenCalled();
     });
 
-    it('returns an error for invalid rating', async () => {
+    it("returns an error for invalid rating", async () => {
       const invalidReviewCreate: ReviewCreateDTO = {
-        itemId: 'item1',
+        itemId: "item1",
         rating: 67,
-        reviewText: 'Great album!',
-        artistID: 'artist1',
-        type: 'album',
+        reviewText: "Great album!",
+        artistID: "artist1",
+        type: "album",
       };
       const result = await reviewService.createReview(
         invalidReviewCreate,
-        'user1'
+        "user1",
       );
       expect(result.ok).toBe(false);
       if (!result.ok) {
-        expect(result.error).toBe('Rating must be between 1 and 5');
+        expect(result.error).toBe("Rating must be between 1 and 5");
       }
       expect(mockRepo.create).not.toHaveBeenCalled();
     });
 
-    it('returns an error for invalid reviewText', async () => {
+    it("returns an error for invalid reviewText", async () => {
       const invalidReviewCreate: ReviewCreateDTO = {
-        itemId: 'item1',
+        itemId: "item1",
         rating: 4,
-        reviewText: 'A'.repeat(1001),
-        artistID: 'artist1',
-        type: 'album',
+        reviewText: "A".repeat(1001),
+        artistID: "artist1",
+        type: "album",
       };
       const result = await reviewService.createReview(
         invalidReviewCreate,
-        'user1'
+        "user1",
       );
       expect(result.ok).toBe(false);
       if (!result.ok) {
         expect(result.error).toBe(
-          'Review text exceeds maximum length of 1000 characters'
+          "Review text exceeds maximum length of 1000 characters",
         );
       }
     });
 
-    it('returns an error if repo fails', async () => {
+    it("returns an error if repo fails", async () => {
       vi.mocked(mockRepo.getByUserAndItem).mockResolvedValue(ok(null));
       vi.mocked(mockRepo.create).mockResolvedValue(
-        err('Database error: unable to create review')
+        err("Database error: unable to create review"),
       );
       const reviewCreateInput: ReviewCreateDTO = {
-        itemId: 'item1',
+        itemId: "item1",
         rating: 5,
-        reviewText: 'Great album!',
-        artistID: 'artist1',
-        type: 'album',
+        reviewText: "Great album!",
+        artistID: "artist1",
+        type: "album",
       };
       const result = await reviewService.createReview(
         reviewCreateInput,
-        'user1'
+        "user1",
       );
       expect(result.ok).toBe(false);
       if (!result.ok) {
-        expect(result.error).toBe('Database error: unable to create review');
+        expect(result.error).toBe("Database error: unable to create review");
       }
       expect(mockRepo.create).toHaveBeenCalled();
     });
   });
 
-  describe('getReviewById', () => {
-    it('returns a review when found', async () => {
+  describe("getReviewById", () => {
+    it("returns a review when found", async () => {
       vi.mocked(mockRepo.getById).mockResolvedValue(ok(sampleReview));
-      const result = await reviewService.getReviewById('rev1');
+      const result = await reviewService.getReviewById("rev1");
       expect(result.ok).toBe(true);
       if (result.ok) {
         expect(result.data).toEqual(sampleReview);
       }
-      expect(mockRepo.getById).toHaveBeenCalledWith('rev1');
+      expect(mockRepo.getById).toHaveBeenCalledWith("rev1");
     });
 
-    it('returns an error when not found or invalid id', async () => {
-      vi.mocked(mockRepo.getById).mockResolvedValue(err('Review not found'));
-      const result = await reviewService.getReviewById('invalid-id');
+    it("returns an error when not found or invalid id", async () => {
+      vi.mocked(mockRepo.getById).mockResolvedValue(err("Review not found"));
+      const result = await reviewService.getReviewById("invalid-id");
       expect(result.ok).toBe(false);
       if (!result.ok) {
-        expect(result.error).toBe('Review not found');
+        expect(result.error).toBe("Review not found");
       }
-      expect(mockRepo.getById).toHaveBeenCalledWith('invalid-id');
+      expect(mockRepo.getById).toHaveBeenCalledWith("invalid-id");
     });
 
-    it('handles repo failure', async () => {
+    it("handles repo failure", async () => {
       vi.mocked(mockRepo.getById).mockResolvedValue(
-        err('Database error: unable to fetch review')
+        err("Database error: unable to fetch review"),
       );
-      const result = await reviewService.getReviewById('rev1');
+      const result = await reviewService.getReviewById("rev1");
       expect(result.ok).toBe(false);
       if (!result.ok) {
-        expect(result.error).toBe('Database error: unable to fetch review');
+        expect(result.error).toBe("Database error: unable to fetch review");
       }
-      expect(mockRepo.getById).toHaveBeenCalledWith('rev1');
+      expect(mockRepo.getById).toHaveBeenCalledWith("rev1");
     });
   });
 
-  describe('updateReview', () => {
-    it('updates a review and marks it as edited', async () => {
+  describe("updateReview", () => {
+    it("updates a review and marks it as edited", async () => {
       vi.mocked(mockRepo.getById).mockResolvedValue(ok(sampleReview));
       vi.mocked(mockRepo.update).mockResolvedValue(
-        ok({ ...sampleReview, rating: 4 })
+        ok({ ...sampleReview, rating: 4 }),
       );
       const updates: ReviewUpdateDTO = {
-        reviewId: 'rev1',
+        reviewId: "rev1",
         rating: 4,
       };
-      const result = await reviewService.updateReview('user1', updates);
+      const result = await reviewService.updateReview("user1", updates);
       expect(result.ok).toBe(true);
       if (result.ok) {
         expect(result.data.rating).toBe(4);
@@ -239,326 +239,332 @@ describe('ReviewService', () => {
       expect(mockRepo.update).toHaveBeenCalledWith(
         updates.reviewId,
         updates.rating,
-        updates.reviewText
+        updates.reviewText,
       );
     });
 
-    it('prevents updating a review the user does not own', async () => {
+    it("prevents updating a review the user does not own", async () => {
       vi.mocked(mockRepo.getById).mockResolvedValue(ok(sampleReview));
       const updates: ReviewUpdateDTO = {
-        reviewId: 'rev1',
+        reviewId: "rev1",
         rating: 4,
       };
-      const result = await reviewService.updateReview('user2', updates);
+      const result = await reviewService.updateReview("user2", updates);
       expect(result.ok).toBe(false);
       if (!result.ok) {
         expect(result.error).toBe(
-          'Unauthorized: You can only update your own reviews'
+          "Unauthorized: You can only update your own reviews",
         );
       }
       expect(mockRepo.update).not.toHaveBeenCalled();
     });
 
-    it('returns an error for invalid update input', async () => {
+    it("returns an error for invalid update input", async () => {
       const invalidUpdates: ReviewUpdateDTO = {
-        reviewId: 'rev1',
+        reviewId: "rev1",
         rating: 6,
       };
-      const result = await reviewService.updateReview('user1', invalidUpdates);
+      const result = await reviewService.updateReview("user1", invalidUpdates);
       expect(result.ok).toBe(false);
       if (!result.ok) {
-        expect(result.error).toBe('Rating must be between 1 and 5');
+        expect(result.error).toBe("Rating must be between 1 and 5");
       }
       expect(mockRepo.update).not.toHaveBeenCalled();
     });
   });
 
-  describe('deleteReview', () => {
-    it('deletes a review the user owns', async () => {
+  describe("deleteReview", () => {
+    it("deletes a review the user owns", async () => {
       vi.mocked(mockRepo.delete).mockResolvedValue(ok(true));
       vi.mocked(mockRepo.getById).mockResolvedValue(ok(sampleReview));
-      const result = await reviewService.deleteReview('user1', 'rev1');
+      const result = await reviewService.deleteReview("user1", "rev1");
       expect(result.ok).toBe(true);
       if (result.ok) {
         expect(result.data).toBe(true);
       }
-      expect(mockRepo.delete).toHaveBeenCalledWith('rev1');
+      expect(mockRepo.delete).toHaveBeenCalledWith("rev1");
     });
 
-    it('prevents deleting a review the user does not own', async () => {
+    it("prevents deleting a review the user does not own", async () => {
       vi.mocked(mockRepo.delete).mockResolvedValue(
-        err('You do not own this review')
+        err("You do not own this review"),
       );
       vi.mocked(mockRepo.getById).mockResolvedValue(ok(sampleReview));
-      const result = await reviewService.deleteReview('user2', 'rev1');
+      const result = await reviewService.deleteReview("user2", "rev1");
       expect(result.ok).toBe(false);
       if (!result.ok) {
         expect(result.error).toBe(
-          'Unauthorized: You can only delete your own reviews'
+          "Unauthorized: You can only delete your own reviews",
         );
       }
     });
 
-    it('returns an error when review does not exist', async () => {
-      vi.mocked(mockRepo.getById).mockResolvedValue(err('Review not found'));
+    it("returns an error when review does not exist", async () => {
+      vi.mocked(mockRepo.getById).mockResolvedValue(err("Review not found"));
       const result = await reviewService.deleteReview(
-        'user1',
-        'nonexistent-rev'
+        "user1",
+        "nonexistent-rev",
       );
       expect(result.ok).toBe(false);
       if (!result.ok) {
-        expect(result.error).toBe('Review not found');
+        expect(result.error).toBe("Review not found");
       }
     });
   });
 
-  describe('likeReview', () => {
-    it('likes a review', async () => {
+  describe("likeReview", () => {
+    it("likes a review", async () => {
       vi.mocked(mockRepo.like).mockResolvedValue(ok(true));
       vi.mocked(mockRepo.hasUserLiked).mockResolvedValue(ok(false));
-      const result = await reviewService.likeReview('rev1', 'user2');
+      const result = await reviewService.likeReview("rev1", "user2");
       expect(result.ok).toBe(true);
       if (result.ok) {
         expect(result.data).toBe(true);
       }
-      expect(mockRepo.like).toHaveBeenCalledWith('rev1', 'user2');
+      expect(mockRepo.like).toHaveBeenCalledWith("rev1", "user2");
     });
 
-    it('prevents liking own review', async () => {
+    it("prevents liking own review", async () => {
       vi.mocked(mockRepo.hasUserLiked).mockResolvedValue(ok(true));
-      const result = await reviewService.likeReview('rev1', 'user1');
+      const result = await reviewService.likeReview("rev1", "user1");
       expect(result.ok).toBe(false);
       if (!result.ok) {
-        expect(result.error).toBe('User has already liked this review');
+        expect(result.error).toBe("User has already liked this review");
       }
       expect(mockRepo.like).not.toHaveBeenCalled();
     });
-    it('handles repo errors', async () => {
+    it("handles repo errors", async () => {
       vi.mocked(mockRepo.like).mockResolvedValue(
-        err('Database error: unable to like review')
+        err("Database error: unable to like review"),
       );
       vi.mocked(mockRepo.hasUserLiked).mockResolvedValue(ok(false));
-      const result = await reviewService.likeReview('rev1', 'user2');
+      const result = await reviewService.likeReview("rev1", "user2");
       expect(result.ok).toBe(false);
       if (!result.ok) {
-        expect(result.error).toBe('Failed to like review');
+        expect(result.error).toBe("Failed to like review");
       }
-      expect(mockRepo.like).toHaveBeenCalledWith('rev1', 'user2');
+      expect(mockRepo.like).toHaveBeenCalledWith("rev1", "user2");
     });
   });
 
-  describe('unlikeReview', () => {
-    it('unlikes a previously liked review', async () => {
+  describe("unlikeReview", () => {
+    it("unlikes a previously liked review", async () => {
       vi.mocked(mockRepo.unlike).mockResolvedValue(ok(true));
       vi.mocked(mockRepo.getByUserAndItem).mockResolvedValue(ok(sampleReview));
 
-      const result = await reviewService.unlikeReview('rev1', 'user2');
+      const result = await reviewService.unlikeReview("rev1", "user2");
       expect(result.ok).toBe(true);
       if (result.ok) {
         expect(result.data).toBe(true);
       }
-      expect(mockRepo.unlike).toHaveBeenCalledWith('rev1', 'user2');
+      expect(mockRepo.unlike).toHaveBeenCalledWith("rev1", "user2");
     });
 
-    it('returns an error if review was not liked', async () => {
-      vi.mocked(mockRepo.unlike).mockResolvedValue(err('Review not liked'));
+    it("returns an error if review was not liked", async () => {
+      vi.mocked(mockRepo.unlike).mockResolvedValue(err("Review not liked"));
       vi.mocked(mockRepo.getByUserAndItem).mockResolvedValue(ok(sampleReview));
 
-      const result = await reviewService.unlikeReview('rev1', 'user2');
+      const result = await reviewService.unlikeReview("rev1", "user2");
       expect(result.ok).toBe(false);
       if (!result.ok) {
-        expect(result.error).toBe('Failed to unlike review');
+        expect(result.error).toBe("Failed to unlike review");
       }
-      expect(mockRepo.unlike).toHaveBeenCalledWith('rev1', 'user2');
+      expect(mockRepo.unlike).toHaveBeenCalledWith("rev1", "user2");
     });
   });
 
-  describe('getAllReviewsRelatedToArtist', () => {
-    it('retrieves all reviews for a given artist', async () => {
-      const artistReviews = generateReviews(15, 'album');
+  describe("getAllReviewsRelatedToArtist", () => {
+    it("retrieves all reviews for a given artist", async () => {
+      const artistReviews = generateReviews(15, "album");
       vi.mocked(mockRepo.getArtistReviews).mockResolvedValue(ok(artistReviews));
       const result = await reviewService.getAllReviewsRelatedToArtist(
-        'artist1',
-        defaultSort
+        "artist1",
+        defaultSort,
       );
       expect(result.ok).toBe(true);
       if (result.ok) {
         expect(result.data).toEqual(artistReviews);
       }
       expect(mockRepo.getArtistReviews).toHaveBeenCalledWith(
-        'artist1',
-        defaultSort
+        "artist1",
+        defaultSort,
       );
     });
 
-    it('handles repo errors when fetching artist reviews', async () => {
+    it("handles repo errors when fetching artist reviews", async () => {
       vi.mocked(mockRepo.getArtistReviews).mockResolvedValue(
-        err('Database error: unable to fetch artist reviews')
+        err("Database error: unable to fetch artist reviews"),
       );
       const result = await reviewService.getAllReviewsRelatedToArtist(
-        'artist1',
-        defaultSort
+        "artist1",
+        defaultSort,
       );
       expect(result.ok).toBe(false);
       if (!result.ok) {
         expect(result.error).toBe(
-          'Database error: unable to fetch artist reviews'
+          "Database error: unable to fetch artist reviews",
         );
       }
       expect(mockRepo.getArtistReviews).toHaveBeenCalledWith(
-        'artist1',
-        defaultSort
+        "artist1",
+        defaultSort,
       );
     });
 
-    it('returns in the sort format given', async () => {
-      const artistReviews = generateReviews(100000, 'track');
+    it("returns in the sort format given", async () => {
+      const artistReviews = generateReviews(100000, "track");
       const customSort: Sorting = {
-        sortBy: 'rating',
-        order: 'asc',
+        sortBy: "rating",
+        order: "asc",
         page: 2,
         pageSize: 5,
       };
       const paginatedReviews = artistReviews
         .sort((a, b) =>
-          customSort.order === 'asc' ? a.rating - b.rating : b.rating - a.rating
+          customSort.order === "asc"
+            ? a.rating - b.rating
+            : b.rating - a.rating,
         )
         .slice(
           (customSort.page - 1) * customSort.pageSize,
-          customSort.page * customSort.pageSize
+          customSort.page * customSort.pageSize,
         );
       vi.mocked(mockRepo.getArtistReviews).mockResolvedValue(
-        ok(paginatedReviews)
+        ok(paginatedReviews),
       );
       const result = await reviewService.getAllReviewsRelatedToArtist(
-        'artist2',
-        customSort
+        "artist2",
+        customSort,
       );
       expect(result.ok).toBe(true);
       if (result.ok) {
         expect(result.data).toEqual(paginatedReviews);
       }
       expect(mockRepo.getArtistReviews).toHaveBeenCalledWith(
-        'artist2',
-        customSort
+        "artist2",
+        customSort,
       );
     });
   });
 
-  describe('getting reviews related to an album', () => {
-    it('retrieves all reviews for a given album', async () => {
-      const albumReviews = generateReviews(20, 'album');
+  describe("getting reviews related to an album", () => {
+    it("retrieves all reviews for a given album", async () => {
+      const albumReviews = generateReviews(20, "album");
       vi.mocked(mockRepo.getAlbumReviews).mockResolvedValue(ok(albumReviews));
-      const result = await reviewService.getAlbumReviews('album1', defaultSort);
+      const result = await reviewService.getAlbumReviews("album1", defaultSort);
       expect(result.ok).toBe(true);
       if (result.ok) {
         expect(result.data).toEqual(albumReviews);
       }
       expect(mockRepo.getAlbumReviews).toHaveBeenCalledWith(
-        'album1',
-        defaultSort
+        "album1",
+        defaultSort,
       );
     });
-    it('handles repo errors when fetching album reviews', async () => {
+    it("handles repo errors when fetching album reviews", async () => {
       vi.mocked(mockRepo.getAlbumReviews).mockResolvedValue(
-        err('Database error: unable to fetch album reviews')
+        err("Database error: unable to fetch album reviews"),
       );
-      const result = await reviewService.getAlbumReviews('album1', defaultSort);
+      const result = await reviewService.getAlbumReviews("album1", defaultSort);
       expect(result.ok).toBe(false);
       if (!result.ok) {
         expect(result.error).toBe(
-          'Database error: unable to fetch album reviews'
+          "Database error: unable to fetch album reviews",
         );
       }
       expect(mockRepo.getAlbumReviews).toHaveBeenCalledWith(
-        'album1',
-        defaultSort
+        "album1",
+        defaultSort,
       );
     });
-    it('returns in the given sort order', async () => {
-      const albumReviews = generateReviews(50, 'album');
+    it("returns in the given sort order", async () => {
+      const albumReviews = generateReviews(50, "album");
       const customSort: Sorting = {
-        sortBy: 'rating',
-        order: 'desc',
+        sortBy: "rating",
+        order: "desc",
         page: 1,
         pageSize: 10,
       };
       const sortedReviews = albumReviews
         .sort((a, b) =>
-          customSort.order === 'asc' ? a.rating - b.rating : b.rating - a.rating
+          customSort.order === "asc"
+            ? a.rating - b.rating
+            : b.rating - a.rating,
         )
         .slice(
           (customSort.page - 1) * customSort.pageSize,
-          customSort.page * customSort.pageSize
+          customSort.page * customSort.pageSize,
         );
       vi.mocked(mockRepo.getAlbumReviews).mockResolvedValue(ok(sortedReviews));
-      const result = await reviewService.getAlbumReviews('album2', customSort);
+      const result = await reviewService.getAlbumReviews("album2", customSort);
       expect(result.ok).toBe(true);
       if (result.ok) {
         expect(result.data).toEqual(sortedReviews);
       }
       expect(mockRepo.getAlbumReviews).toHaveBeenCalledWith(
-        'album2',
-        customSort
+        "album2",
+        customSort,
       );
     });
   });
 
-  describe('getting reviews related to a track', () => {
-    it('retrieves all reviews for a given track', async () => {
-      const trackReviews = generateReviews(25, 'track');
+  describe("getting reviews related to a track", () => {
+    it("retrieves all reviews for a given track", async () => {
+      const trackReviews = generateReviews(25, "track");
       vi.mocked(mockRepo.getTrackReviews).mockResolvedValue(ok(trackReviews));
-      const result = await reviewService.getTrackReviews('track1', defaultSort);
+      const result = await reviewService.getTrackReviews("track1", defaultSort);
       expect(result.ok).toBe(true);
       if (result.ok) {
         expect(result.data).toEqual(trackReviews);
       }
       expect(mockRepo.getTrackReviews).toHaveBeenCalledWith(
-        'track1',
-        defaultSort
+        "track1",
+        defaultSort,
       );
     });
-    it('handles repo errors when fetching track reviews', async () => {
+    it("handles repo errors when fetching track reviews", async () => {
       vi.mocked(mockRepo.getTrackReviews).mockResolvedValue(
-        err('Database error: unable to fetch track reviews')
+        err("Database error: unable to fetch track reviews"),
       );
-      const result = await reviewService.getTrackReviews('track1', defaultSort);
+      const result = await reviewService.getTrackReviews("track1", defaultSort);
       expect(result.ok).toBe(false);
       if (!result.ok) {
         expect(result.error).toBe(
-          'Database error: unable to fetch track reviews'
+          "Database error: unable to fetch track reviews",
         );
       }
       expect(mockRepo.getTrackReviews).toHaveBeenCalledWith(
-        'track1',
-        defaultSort
+        "track1",
+        defaultSort,
       );
     });
-    it('returns in the given sort order', async () => {
-      const trackReviews = generateReviews(40, 'track');
+    it("returns in the given sort order", async () => {
+      const trackReviews = generateReviews(40, "track");
       const customSort: Sorting = {
-        sortBy: 'rating',
-        order: 'asc',
+        sortBy: "rating",
+        order: "asc",
         page: 3,
         pageSize: 5,
       };
       const sortedReviews = trackReviews
         .sort((a, b) =>
-          customSort.order === 'asc' ? a.rating - b.rating : b.rating - a.rating
+          customSort.order === "asc"
+            ? a.rating - b.rating
+            : b.rating - a.rating,
         )
         .slice(
           (customSort.page - 1) * customSort.pageSize,
-          customSort.page * customSort.pageSize
+          customSort.page * customSort.pageSize,
         );
       vi.mocked(mockRepo.getTrackReviews).mockResolvedValue(ok(sortedReviews));
-      const result = await reviewService.getTrackReviews('track2', customSort);
+      const result = await reviewService.getTrackReviews("track2", customSort);
       expect(result.ok).toBe(true);
       if (result.ok) {
         expect(result.data).toEqual(sortedReviews);
       }
       expect(mockRepo.getTrackReviews).toHaveBeenCalledWith(
-        'track2',
-        customSort
+        "track2",
+        customSort,
       );
     });
   });
