@@ -5,5 +5,5 @@ export default function HomeLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <main>{children}</main>;
+  return <main className="flex-1 flex flex-col">{children}</main>;
 }

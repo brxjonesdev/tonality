@@ -1,6 +1,8 @@
 "use client";
 import React from "react";
 import { createClient } from "@/lib/supabase/client";
+import { Button } from "../../shared/button";
+import { Disc3, DiscAlbumIcon } from "lucide-react";
 const supabase = createClient();
 
 const signOut = async () => {
@@ -22,11 +24,13 @@ const signIn = async () => {
 
 export default function AuthButton({ mode }: { mode: "sign-in" | "sign-out" }) {
   return (
-    <button
+    <Button
+      variant={`noShadow`}
       onClick={mode === "sign-in" ? signIn : signOut}
-      className="bg-blue-600"
+      className="w-full"
     >
+      <Disc3 className="h-4 w-4" />
       {mode === "sign-in" ? "Sign In" : "Sign Out"}
-    </button>
+    </Button>
   );
 }

@@ -55,9 +55,11 @@ export default function SearchBar() {
   });
 
   return (
-    <div className="w-full max-w-xs space-y-2">
-      <Label htmlFor={id}>Search</Label>
-      <div className="flex rounded-md shadow-xs ">
+    <div className="w-full max-w-xs space-y-2 relative">
+      <Label htmlFor={id} hidden>
+        Search
+      </Label>
+      <div className="flex rounded-md shadow-xs">
         <Select
           defaultValue="track"
           onValueChange={(value) =>
@@ -66,7 +68,7 @@ export default function SearchBar() {
         >
           <SelectTrigger
             id={id}
-            className="rounded-r-none shadow-none focus-visible:z-1"
+            className="rounded-r-none shadow-none focus-visible:z-1 w-fit"
           >
             <SelectValue />
           </SelectTrigger>
@@ -89,7 +91,7 @@ export default function SearchBar() {
             id={id}
             type="text"
             placeholder={getSongTitle()}
-            className="rounded-l-none shadow-none pr-10" // space for button
+            className="rounded-l-none shadow-none pr-10"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             suppressHydrationWarning
@@ -97,7 +99,7 @@ export default function SearchBar() {
 
           {searchQuery.length > 0 && (
             <Button
-              variant="ghost"
+              variant="noShadow"
               size="icon"
               className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 p-0"
               onClick={() => setSearchQuery("")}
@@ -108,16 +110,15 @@ export default function SearchBar() {
         </div>
       </div>
 
-      <div>
-        {isLoading && debouncedSearchQuery.length > 0 && (
-          <div className="animate-in fade-in-50 duration-300">
-            <p>Loading results...</p>
-          </div>
-        )}
+      {debouncedSearchQuery.length > 0 && (
+        <div className="absolute top-full left-0 right-0 mt-2 z-50">
+          {isLoading && (
+            <div className="animate-in fade-in-50 duration-300 bg-white rounded-md border shadow-xl p-4">
+              <p>Loading results...</p>
+            </div>
+          )}
 
-        {!isLoading &&
-          debouncedSearchQuery.length > 0 &&
-          results.length === 0 && (
+          {!isLoading && results.length === 0 && (
             <div className="animate-in fade-in-50 duration-300">
               <Empty className="from-cyan-100 to-blue-300 h-full bg-linear-to-b from-20%">
                 <EmptyHeader>
@@ -135,22 +136,23 @@ export default function SearchBar() {
             </div>
           )}
 
-        {!isLoading && results.length > 0 && (
-          <ScrollArea className="h-72 w-full rounded-md border shadow-xl bg-cyan-200/10 border-cyan-300/20">
-            <div className="animate-in fade-in-50 duration-300">
-              {results.map((item) => (
-                <ResultItem key={item.id} {...item} />
-              ))}
-            </div>
-          </ScrollArea>
-        )}
+          {!isLoading && results.length > 0 && (
+            <ScrollArea className="h-72 w-full rounded-md border shadow-xl bg-cyan-50 border-cyan-300/20">
+              <div className="animate-in fade-in-50 duration-300">
+                {results.map((item) => (
+                  <ResultItem key={item.id} {...item} />
+                ))}
+              </div>
+            </ScrollArea>
+          )}
 
-        {isError && (
-          <div className="animate-in fade-in-50 duration-300">
-            <p>Error fetching results. Please try again later.</p>
-          </div>
-        )}
-      </div>
+          {isError && (
+            <div className="animate-in fade-in-50 duration-300 bg-white rounded-md border shadow-xl p-4">
+              <p>Error fetching results. Please try again later.</p>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
