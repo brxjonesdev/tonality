@@ -1,31 +1,28 @@
-import { Button } from "@/lib/components/shared/button";
-import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/lib/components/shared/card";
-import { Badge } from "@/lib/components/shared/badge";
-import {
-  LucideStars,
-  Music2,
-  Disc3,
-  Radio,
-  Share2,
-  Users,
-  Heart,
-  ArrowRight,
-  Music4Icon,
-} from "lucide-react";
-import Link from "next/link";
-import Image from "next/image";
-import { Hero } from "@/lib/features/landing/hero";
-import AuthButton from "@/lib/components/auth/components/auth-button";
+import HeroLanding from "@/lib/components/views/hero-landing";
+import { createClient } from "@/lib/supabase/server";
+import CratesTimeline from "@/lib/features/crates/components/crates-timeline";
+import UserMenu from "@/lib/features/user/user-menu";
+import ReviewTimeline from "@/lib/features/review/components/review-timeline";
+import PopularItems from "@/lib/features/review/components/popular-items";
 
-export default function LandingPage() {
+export default async function TonalityHome() {
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getUser();
+  const user = data.user;
+
   return (
     <div className="flex flex-col min-h-screen">
-      <main className="p-4 flex flex-col max-w-5xl mx-auto w-full flex-1"></main>
+      <main className="p-4 flex flex-col max-w-5xl mx-auto w-full flex-1">
+        {user ? null : <HeroLanding />}
+        <section className="grid grid-cols-1 md:grid-cols-2">
+          <div>
+            {user ? <UserMenu userId={user?.id} /> : null}
+            <PopularItems />
+            <ReviewTimeline userId={user?.id || ""} />
+          </div>
+          {user ? <CratesTimeline userId={user?.id || ""} /> : null}
+        </section>
+      </main>
     </div>
   );
 }

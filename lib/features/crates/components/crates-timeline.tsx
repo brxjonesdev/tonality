@@ -1,3 +1,6 @@
-export default function CratesTimeline({ userId }: { userId: string }) {
-  return <div>Crates Timeline for user {userId}</div>;
+interface CratesTimelineProps {
+  userId?: string;
+}
+export default function CratesTimeline(props: CratesTimelineProps) {
+  return <div>Crates Timeline for user {props.userId}</div>;
 }
